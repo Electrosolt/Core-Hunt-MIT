@@ -1,0 +1,20 @@
+PlayerEvent<"Join">()
+    IfVar<"=">(GV(Player Count), 1)
+    {
+        CallFunction<"Constants">();
+        CallFunction<"Setup">();
+    }
+    StartProcess<"PlayerLoopH">();
+    CallFunction<"GoToSpawn">();
+    SetVar<"=">(game:`%default passwordSubtitle`, "<gray>Input it by typing </gray><yellow>@password</yellow><gray> in chat.");
+    Repeat<"Forever">()
+    {
+        PlayerAction<"SendTitle">("<gradient:red:#4488ff>Please enter password:", game:`%default passwordSubtitle`, 60, 0, 20);
+        IfVar<"=">(game:`%default validPassword`, 1)
+        {
+            Control<"StopRepeat">();
+        }
+        Control<"Wait">();
+    }
+    PlayerAction<"SendTitle">("", 0, 0, 0);
+    CallFunction<"GoToSpawn">();

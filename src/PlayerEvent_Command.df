@@ -1,0 +1,18 @@
+PlayerEvent<"Command">()
+    SetVar<"=">(local:`cmd`, GV(Event Command));
+    IfVar<"=">(game:`%default validPassword`, 0)
+    {
+        IfGame<"CommandEquals">('1234')
+        {
+            SetVar<"=">(game:`%default validPassword`, 1);
+        }
+        Else
+        {
+            SetVar<"StyledText">(game:`%default passwordSubtitle`, "<red>Password "%var(cmd)" is incorrect.")#TextValueMerging=AddSpaces;
+        }
+        Control<"End">();
+    }
+    IfGame<"CommandEquals">('start')
+    {
+        CallFunction<"StartAIMatch">();
+    }

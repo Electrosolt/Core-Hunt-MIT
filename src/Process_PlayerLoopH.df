@@ -1,0 +1,6 @@
+Process<"PlayerLoopH">()
+    Repeat<"Forever">()
+    {
+        StartProcess<"PlayerLoop">();
+        Control<"Wait">();
+    }

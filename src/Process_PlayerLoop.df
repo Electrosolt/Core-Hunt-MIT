@@ -1,0 +1,7 @@
+Process<"PlayerLoop">()
+    IfVar<"=">(game:`%default mode`, 'Spawn', 'Verification')
+    {
+        PlayerAction<"SetFoodLevel">(6);
+        PlayerAction<"GivePotion">(Pot{Jump Boost -100 for ∞})#ShowIcon=False#EffectParticles=None;
+        PlayerAction<"SetSpeed">(0);
+    }

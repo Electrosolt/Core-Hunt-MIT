@@ -1,0 +1,21 @@
+Function<"MakeSpawnMenu">(str: playerName)
+    SelectObject<"EntitiesCond | HasCustomTag">('%default spawn_menu');
+    EntityAction<"Remove">();
+    SelectObject<"Reset">();
+    Repeat<"Forever">()
+    {
+        IfGame<"IsChunkLoaded">([93.5,51.5,6.5])
+        {
+            Control<"StopRepeat">();
+        }
+        PlayerAction<"SendMessage">(":(");
+        Control<"Wait">(2);
+    }
+    SetVar<"=">(line:`lineLoc`, [96.5,53.5,6.5]);
+    SetVar<"CreateList">(line:`lines`, "<gradient:red:blue>⏴ ᴄᴏʀᴇ ʜᴜɴᴛ ⏵", "» Play", "» Credits");
+    Repeat<"ForEach">(line:`text`, line:`lines`)
+    {
+        GameAction<"SpawnTextDisplay">(line:`lineLoc`, line:`text`);
+        EntityAction<"SetCustomTag">('%default spawn_menu');
+        SetVar<"ShiftOnAxis">(line:`lineLoc`, -0.5)#Coordinate=Y;
+    }
