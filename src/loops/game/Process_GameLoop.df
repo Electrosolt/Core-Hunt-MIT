@@ -1,0 +1,10 @@
+Process<"GameLoop">()
+    SetVar<"=">(line:`i`, 0);
+    Repeat<"ForEach">(line:`room`, game:`rooms`)
+    {
+        SetVar<"+=">(line:`i`);
+        IfVar<"=">(line:`room`, 'full')
+        {
+            CallFunction<"RoomLoop">(line:`i`);
+        }
+    }

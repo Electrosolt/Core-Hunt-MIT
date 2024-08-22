@@ -5,3 +5,8 @@ Process<"PlayerLoop">()
         PlayerAction<"GivePotion">(Pot{Jump Boost -100 for ∞})#ShowIcon=False#EffectParticles=None;
         PlayerAction<"SetSpeed">(0);
     }
+    IfVar<"=">(game:`%default mode`, 'Ingame')
+    {
+        PlayerAction<"SetFoodLevel">(20);
+        PlayerAction<"SetSpeed">(100)#SpeedType=Both;
+    }

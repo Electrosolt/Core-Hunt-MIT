@@ -1,0 +1,6 @@
+Function<"RoomLoop">(num: IDNum)
+    SetVar<"=">(local:`id`, 'Room%var(IDNum)');
+    IfVar<"=">(game:`%var(id).Status`)
+    {
+        SetVar<"+=">(game:`%var(id).LoopTick`);
+    }

@@ -1,3 +1,8 @@
 Function<"Constants">()
-    SetVar<"=">();
-    SetVar<"=">();
+    SetVar<"CreateList">(game:`rooms`, 'empty', 'empty', 'empty', 'empty', 'empty');
+    SetVar<"=">(game:`RedCore`, item:red_stained_glass);
+    SetVar<"=">(game:`BlueCore`, item:blue_stained_glass);
+    SetVar<"=">(game:`RedOpposite`, 'Blue');
+    SetVar<"=">(game:`BlueOpposite`, 'Red');
+    SetVar<"=">(game:`RedColor`, "<#ee3020>");
+    SetVar<"=">(game:`BlueColor`, "<#4488ff>");

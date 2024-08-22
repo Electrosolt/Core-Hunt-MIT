@@ -1,0 +1,6 @@
+Process<"GameLoopH">()
+    Repeat<"Forever">()
+    {
+        StartProcess<"GameLoop">()#TargetMode=WithNoTargets;
+        Control<"Wait">();
+    }

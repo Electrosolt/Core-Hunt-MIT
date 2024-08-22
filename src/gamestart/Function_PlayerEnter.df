@@ -1,0 +1,11 @@
+Function<"PlayerEnter">(str: color)
+    SelectObject<"PlayerName">(game:`%var(ID).%var(color)Player`);
+    SetVar<"=">(game:`%selected mode`, 'Ingame');
+    PlayerAction<"Teleport">(game:`%var(ID).%var(color)Start`);
+    PlayerAction<"SetAllowFlight">();
+    PlayerAction<"SetFlying">();
+    PlayerAction<"SetSpeed">(100)#SpeedType=Both;
+    SetVar<"StyledText">(line:`vsText`, "<gray>vs.<space>", game:`%var(%var(color)Opposite)Color`, game:`%var(ID).%var(%var(color)Opposite)Player`);
+    PlayerAction<"SendTitle">("<gradient:red:blue>⏴ ᴄᴏʀᴇ ʜᴜɴᴛ ⏵", line:`vsText`);
+    PlayerAction<"PlayEntitySound">(Sound{Ender Dragon (Note Block)|p=2|vol=0.5}, '%selected');
+    SelectObject<"Reset">();

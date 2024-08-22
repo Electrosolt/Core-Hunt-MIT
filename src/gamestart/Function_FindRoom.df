@@ -1,0 +1,12 @@
+Function<"FindRoom">(var: emptyIndex, var: cornerLoc, var: redSpawn, var: blueSpawn)
+    SetVar<"GetValueIndex">(line:`emptyIndex`, game:`rooms`, 'empty');
+    IfVar<"=">(line:`emptyIndex`, 0)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>All rooms are full. Please try again later.");
+        PlayerAction<"PlaySound">(Sound{Shulker Hurt (Closed)});
+        Control<"Return">();
+    }
+    SetVar<"=">(line:`verticalShift`, %math(%var(emptyIndex) - 1 * 39));
+    SetVar<"ShiftOnAxis">(line:`cornerLoc`, [56.5,3.5,56.5], line:`verticalShift`)#Coordinate=Y;
+    SetVar<"ShiftOnAxis">(line:`redSpawn`, [95.5,4,53.5,0,45], line:`verticalShift`)#Coordinate=Y;
+    SetVar<"ShiftOnAxis">(line:`blueSpawn`, [53.5,4,95.5,0,-135], line:`verticalShift`)#Coordinate=Y;

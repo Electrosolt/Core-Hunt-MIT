@@ -1,0 +1,17 @@
+Function<"StartAIMatch">()
+    PlayerAction<"SendMessage">("ran");
+    SetVar<"=">();
+    CallFunction<"FindRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`);
+    PlayerAction<"SendMessage">(line:`roomNumber`);
+    IfVar<"=">(line:`roomNumber`, 0)
+    {
+        Control<"Return">();
+    }
+    IfVar<"=">(%random(0,1), 0)
+    {
+        CallFunction<"StartRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, '%default', 'AI');
+    }
+    Else
+    {
+        CallFunction<"StartRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, 'AI', '%default');
+    }

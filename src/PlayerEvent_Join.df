@@ -3,6 +3,7 @@ PlayerEvent<"Join">()
     {
         CallFunction<"Constants">();
         CallFunction<"Setup">();
+        StartProcess<"GameLoopH">()#TargetMode=WithNoTargets;
     }
     StartProcess<"PlayerLoopH">();
     CallFunction<"GoToSpawn">();
