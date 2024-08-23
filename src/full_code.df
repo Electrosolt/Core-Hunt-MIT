@@ -1,0 +1,505 @@
+PlayerEvent<"Join">()
+    IfVar<"=">(GV(Player Count), 1)
+    {
+        CallFunction<"Constants">();
+        CallFunction<"Setup">();
+        StartProcess<"GameLoopH">()#TargetMode=WithNoTargets;
+    }
+    StartProcess<"PlayerLoopH">();
+    CallFunction<"GoToSpawn">();
+    SetVar<"=">(game:`%default passwordSubtitle`, "<gray>Input it by typing </gray><yellow>@password</yellow><gray> in chat.");
+    Repeat<"Forever">()
+    {
+        PlayerAction<"SendTitle">("<gradient:red:#4488ff>Please enter password:", game:`%default passwordSubtitle`, 60, 0, 20);
+        IfVar<"=">(game:`%default validPassword`, 1)
+        {
+            Control<"StopRepeat">();
+        }
+        Control<"Wait">();
+    }
+    PlayerAction<"SendTitle">("", 0, 0, 0);
+    CallFunction<"GoToSpawn">();
+
+--------------------------
+
+PlayerEvent<"Command">()
+    SetVar<"=">(local:`cmd`, GV(Event Command));
+    IfVar<"=">(game:`%default validPassword`, 0)
+    {
+        IfGame<"CommandEquals">('1234')
+        {
+            SetVar<"=">(game:`%default validPassword`, 1);
+        }
+        Else
+        {
+            SetVar<"StyledText">(game:`%default passwordSubtitle`, "<red>Password "%var(cmd)" is incorrect.")#TextValueMerging=AddSpaces;
+        }
+        Control<"End">();
+    }
+    IfGame<"CommandEquals">('start')
+    {
+        CallFunction<"StartAIMatch">();
+    }
+
+--------------------------
+
+PlayerEvent<"RightClick">()
+    GameAction<"CancelEvent">();
+    IfVar<"= | NOT">(game:`%default mode`, 'Ingame')
+    {
+        Control<"End">();
+    }
+    SetVar<"=">(local:`ID`, game:`%default room`);
+    CallFunction<"GetClickedThing">(line:`valid`, line:`isWall`, line:`tileX`, line:`tileZ`, line:`wallID`, GV(Event Block Location));
+    IfVar<"=">(game:`%var(ID).Status`, 'PlacingCores')
+    {
+        IfVar<"=">(line:`isWall`, 1)
+        {
+            PlayerAction<"SendMessage">("<red>» Error! </red><gray>You can't place cores on walls.");
+            Control<"Return">();
+        }
+        IfVar<"=">(line:`valid`, 0)
+        {
+            PlayerAction<"SendMessage">("<red>» Error! </red><gray>You can't place a core here.");
+            Control<"Return">();
+        }
+        IfPlayer<"IsHolding">(game:`%var(%default color)Core`)
+        {
+            CallFunction<"PlaceCore">(line:`success`, game:`%default color`, line:`tileX`, line:`tileZ`, 1);
+            IfVar<"=">(line:`success`, 1)
+            {
+                PlayerAction<"RemoveItems">(game:`%var(%default color)Core`);
+            }
+        }
+    }
+
+--------------------------
+
+Function<"GoToSpawn">()
+    PlayerAction<"Teleport">([93.5,51,6.5,0,-90]);
+    IfVar<"=">(game:`%default validPassword`, 0)
+    {
+        SetVar<"=">(game:`%default mode`, 'Verification');
+    }
+    Else
+    {
+        SetVar<"=">(game:`%default mode`, 'Spawn');
+        CallFunction<"MakeSpawnMenu">();
+    }
+
+--------------------------
+
+Function<"MakeSpawnMenu">(str: playerName)
+    SelectObject<"EntitiesCond | HasCustomTag">('%default spawn_menu');
+    EntityAction<"Remove">();
+    SelectObject<"Reset">();
+    Repeat<"Forever">()
+    {
+        IfGame<"IsChunkLoaded">([93.5,51.5,6.5])
+        {
+            Control<"StopRepeat">();
+        }
+        Control<"Wait">(2);
+    }
+    SetVar<"=">(line:`lineLoc`, [96.5,53.5,6.5]);
+    SetVar<"CreateList">(line:`lines`, "<gradient:red:blue>⏴ ᴄᴏʀᴇ ʜᴜɴᴛ ⏵", "» Play", "» Credits");
+    Repeat<"ForEach">(line:`text`, line:`lines`)
+    {
+        GameAction<"SpawnTextDisplay">(line:`lineLoc`, line:`text`);
+        EntityAction<"SetCustomTag">('%default spawn_menu');
+        SetVar<"ShiftOnAxis">(line:`lineLoc`, -0.5)#Coordinate=Y;
+    }
+
+--------------------------
+
+Function<"Constants">()
+    SetVar<"CreateList">(game:`rooms`, 'empty', 'empty', 'empty', 'empty', 'empty');
+    SetVar<"=">(game:`RedCore`, item:red_stained_glass);
+    SetVar<"=">(game:`BlueCore`, item:blue_stained_glass);
+    SetVar<"=">(game:`RedOpposite`, 'Blue');
+    SetVar<"=">(game:`BlueOpposite`, 'Red');
+    SetVar<"=">(game:`RedColor`, "<#ee3020>");
+    SetVar<"=">(game:`BlueColor`, "<#4488ff>");
+    SetVar<"=">(game:`MidColor`, "<#bb4499>");
+    SetVar<"=">(game:`RedParticle`, PFX{Dust|colorVariation=0|size=1|rgb=16729156|sizeVariation=0});
+    SetVar<"=">(game:`BlueParticle`, PFX{Dust|colorVariation=0|size=1|rgb=26367|sizeVariation=0});
+    SetVar<"=">(game:`RedPowder`, item:red_concrete_powder);
+    SetVar<"=">(game:`BluePowder`, item:blue_concrete_powder);
+    SetVar<"=">(game:`RedStartCoords`, '9|0');
+    SetVar<"=">(game:`BlueStartCoords`, '0|9');
+
+--------------------------
+
+Function<"FindRoom">(var: emptyIndex, var: cornerLoc, var: redSpawn, var: blueSpawn)
+    SetVar<"GetValueIndex">(line:`emptyIndex`, game:`rooms`, 'empty');
+    IfVar<"=">(line:`emptyIndex`, 0)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>All rooms are full. Please try again later.");
+        PlayerAction<"PlaySound">(Sound{Shulker Hurt (Closed)});
+        Control<"Return">();
+    }
+    SetVar<"=">(line:`verticalShift`, %math(%var(emptyIndex) - 1 * 39));
+    SetVar<"ShiftOnAxis">(line:`cornerLoc`, [56.5,3.5,56.5], line:`verticalShift`)#Coordinate=Y;
+    SetVar<"ShiftOnAxis">(line:`redSpawn`, [95.5,4,53.5,0,45], line:`verticalShift`)#Coordinate=Y;
+    SetVar<"ShiftOnAxis">(line:`blueSpawn`, [53.5,4,95.5,0,-135], line:`verticalShift`)#Coordinate=Y;
+
+--------------------------
+
+Function<"StartRoom">(item:gold_block, num: IDNum, loc: corner, loc: redStart, loc: blueStart, str: redPlayer, str: bluePlayer)
+    SetVar<"=">(local:`ID`, 'Room%var(IDNum)');
+    SetVar<"SetListValue">(game:`rooms`, line:`IDNum`, 'full');
+    SetVar<"=">(game:`%var(ID).Status`, 'Startup');
+    SetVar<"=">(game:`%var(ID).RedPlayer`, line:`redPlayer`);
+    SetVar<"=">(game:`%var(ID).BluePlayer`, line:`bluePlayer`);
+    SetVar<"=">(game:`%var(ID).RedStart`, line:`redStart`);
+    SetVar<"=">(game:`%var(ID).BlueStart`, line:`blueStart`);
+    SetVar<"=">(game:`%var(ID).Corner`, line:`corner`);
+    SetVar<"=">(game:`%var(ID).MaxCores`, 3);
+    SetVar<"CreateList">(game:`%var(ID).RedCores`);
+    SetVar<"CreateList">(game:`%var(ID).BlueCores`);
+    CallFunction<"PlayerEnter">('Red');
+    CallFunction<"PlayerEnter">('Blue');
+
+--------------------------
+
+Function<"RoomLoop">(num: IDNum)
+    SetVar<"=">(local:`ID`, 'Room%var(IDNum)');
+    IfVar<"=">(game:`%var(ID).Status`, 'Startup')
+    {
+        SetVar<"+=">(game:`%var(ID).LoopTick`);
+        IfVar<"=">(game:`%var(ID).LoopTick`, 70)
+        {
+            SetVar<"=">(game:`%var(ID).Status`, 'PlacingCores');
+            SetVar<"=">(game:`%var(ID).LoopTick`, 0);
+            CallFunction<"CorePlaceStart">('Red');
+            CallFunction<"CorePlaceStart">('Blue');
+            CallFunction<"">();
+        }
+    }
+    IfVar<"=">(game:`%var(ID).Status`, 'PlacingCores')
+    {
+        SetVar<"+=">(game:`%var(ID).LoopTick`);
+        CallFunction<"AllCoresPlaced">(line:`allCoresPlaced?`);
+        IfVar<"=">(line:`allCoresPlaced?`, 1)
+        {
+            SetVar<"=">(game:`%var(ID).LoopTick`, 1200);
+        }
+        IfVar<"<">(game:`%var(ID).LoopTick`, 1200)
+        {
+            SetVar<"-">(line:`ticksLeft`, 1200, game:`%var(ID).LoopTick`);
+            SetVar<"/">(line:`seconds`, line:`ticksLeft`, 20)#DivisionMode=FloorResult;
+            SetVar<"+=">(line:`seconds`);
+            SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
+            PlayerAction<"SetBossBar">("<#bb4499>Placing Cores <dark_gray>|</dark_gray> <#cc66aa>%var(seconds)s</#cc66aa> left!", line:`ticksLeft`, 1200);
+            IfVar<"=">(%math(%var(ticksLeft) % 20), 0)
+            {
+                PlayerAction<"PlayEntitySound">(Sound{Cherry Wood Button Click On|p=2|vol=0.7}, '%selected');
+            }
+            SelectObject<"Reset">();
+        }
+        Else
+        {
+        }
+    }
+
+--------------------------
+
+Function<"StartAIMatch">()
+    CallFunction<"FindRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`);
+    PlayerAction<"SendMessage">("<dark_gray>» </dark_gray><gray>Found a match in Room %var(roomNumber)");
+    IfVar<"=">(line:`roomNumber`, 0)
+    {
+        Control<"Return">();
+    }
+    IfVar<"=">(%random(0,1), 0)
+    {
+        CallFunction<"StartRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, '%default', 'AI');
+    }
+    Else
+    {
+        CallFunction<"StartRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, 'AI', '%default');
+    }
+
+--------------------------
+
+Function<"PlayerEnter">(str: color)
+    SelectObject<"PlayerName">(game:`%var(ID).%var(color)Player`);
+    SetVar<"=">(game:`%selected mode`, 'Ingame');
+    SetVar<"=">(game:`%default room`, local:`ID`);
+    SetVar<"=">(game:`%default color`, line:`color`);
+    PlayerAction<"Teleport">(game:`%var(ID).%var(color)Start`);
+    PlayerAction<"SetAllowFlight">();
+    PlayerAction<"SetFlying">();
+    PlayerAction<"SetSpeed">(100)#SpeedType=Both;
+    SetVar<"StyledText">(line:`vsText`, "<gray>vs.<space>", game:`%var(%var(color)Opposite)Color`, game:`%var(ID).%var(%var(color)Opposite)Player`);
+    PlayerAction<"SendTitle">("<gradient:red:blue>⏴ ᴄᴏʀᴇ ʜᴜɴᴛ ⏵", line:`vsText`);
+    PlayerAction<"PlayEntitySound">(Sound{Ender Dragon (Note Block)|p=2|vol=0.5}, '%selected');
+    CallFunction<"ClearGrid">();
+    SelectObject<"Reset">();
+
+--------------------------
+
+Function<"CorePlaceStart">(str: color)
+    IfVar<"=">(game:`%var(ID).%var(color)Player`, 'AI')
+    {
+        CallFunction<"AI.CorePlace">(line:`color`);
+    }
+    SelectObject<"PlayerName">(game:`%var(ID).%var(color)Player`);
+    PlayerAction<"PlaySound">(Sound{Experience Orb Pickup});
+    SetVar<"SetItemAmount">(line:`itemstack`, game:`%var(color)Core`, game:`%var(ID).MaxCores`);
+    PlayerAction<"GiveItems">(line:`itemstack`);
+    SetVar<"StyledText">(line:`title`, game:`MidColor`, "Place your Cores!");
+    PlayerAction<"SendTitle">(line:`title`, "<gray>Right click while holding them!");
+    SelectObject<"Reset">();
+
+--------------------------
+
+Function<"AI.CorePlace">(str: color)
+    Repeat<"Multiple">(game:`%var(ID).MaxCores`)
+    {
+        SetVar<"=">(line:`distanceThreshold`, 8);
+        Repeat<"Forever">()
+        {
+            SetVar<"=">(line:`x`, %random(0,9));
+            SetVar<"=">(line:`z`, %random(0,9));
+            SetVar<"=">(line:`pos`, '%var(x)|%var(z)');
+            IfVar<"ListContains">(game:`%var(ID).%var(color)Cores`, line:`pos`)
+            {
+                Control<"Skip">();
+            }
+            SetVar<"=">(line:`minDistance`, 100);
+            Repeat<"ForEach">(line:`core`, game:`%var(ID).%var(color)Cores`)
+            {
+                CallFunction<"TileDistance">(line:`dist`, line:`pos`, line:`core`);
+                SetVar<"MinNumber">(line:`minDistance`, line:`minDistance`, line:`dist`);
+            }
+            IfVar<"<=">(line:`minDistance`, line:`distanceThreshold`)
+            {
+                SetVar<"-=">(line:`distanceThreshold`, 0.5);
+                Control<"Skip">();
+            }
+            CallFunction<"TileDistance">(line:`spawnDist`, line:`pos`, game:`%var(%var(color)Opposite)StartCoords`);
+            IfVar<"<=">(line:`spawnDist`, 1)
+            {
+                Control<"Skip">();
+            }
+            CallFunction<"PlaceCore">(line:`success`, line:`color`, line:`x`, line:`z`, 1);
+            IfVar<"=">(line:`success`, 1)
+            {
+                Control<"StopRepeat">();
+            }
+        }
+    }
+
+--------------------------
+
+Function<"AllCoresPlaced">(var: allCoresPlaced?)
+    SetVar<"=">(line:`allCoresPlaced?`, 0);
+    SetVar<"ListLength">(line:`red`, game:`%var(ID).RedCores`);
+    SetVar<"ListLength">(line:`blue`, game:`%var(ID).BlueCores`);
+    IfVar<"=">(line:`red`, game:`%var(ID).MaxCores`)
+    {
+        IfVar<"=">(line:`blue`, game:`%var(ID).MaxCores`)
+        {
+            SetVar<"=">(line:`allCoresPlaced?`, 1);
+        }
+    }
+
+--------------------------
+
+Function<"GetClickedThing">(var: valid?, var: isWall?, var: tileX, var: tileZ, var: wallID, loc: loc)
+    SetVar<"VectorBetween">(line:`vec`, game:`%var(ID).Corner`, line:`loc`);
+    SetVar<"SetVectorComp">(line:`vec`, 0)#Component=Y;
+    SetVar<"AddVectors">(line:`vec`, line:`vec`, 〈1,0,1〉);
+    SetVar<"GetVectorComp">(line:`x`, line:`vec`);
+    SetVar<"GetVectorComp">(line:`z`, line:`vec`)#Component=Z;
+    CallFunction<"IsInBounds">(line:`valid?`, line:`x`, line:`z`);
+    IfVar<"=">(line:`valid?`, 0)
+    {
+        Control<"Return">();
+    }
+    SetVar<"/">(line:`divided`, line:`vec`, 〈4,1,4〉)#DivisionMode=FloorResult;
+    SetVar<"GetVectorComp">(line:`tileX`, line:`divided`);
+    SetVar<"GetVectorComp">(line:`tileZ`, line:`divided`)#Component=Z;
+    IfVar<"=">(3, %math(%var(x) % 4), %math(%var(z) % 4))
+    {
+        SetVar<"=">(line:`isWall?`, 1);
+        SetVar<"=">(line:`xMod`, %math(%var(x) % 4));
+        SetVar<"=">(line:`zMod`, %math(%var(z) % 4));
+        SetVar<"GetVectorComp">(line:`xDiv`, line:`divided`);
+        SetVar<"GetVectorComp">(line:`zDiv`, line:`divided`)#Component=Z;
+        IfVar<"=">(line:`xMod`, line:`zMod`)
+        {
+            SetVar<"=">(line:`valid?`, 0);
+            Control<"Return">();
+        }
+        IfVar<">">(line:`xMod`, line:`zMod`)
+        {
+            SetVar<"String">(line:`wallID`, '%var(xDiv),%var(zDiv)|', %math(%var(xDiv) + 1), ',%var(zDiv)');
+        }
+        Else
+        {
+            SetVar<"String">(line:`wallID`, '%var(xDiv),%var(zDiv)|%var(xDiv),', %math(%var(zDiv) + 1));
+        }
+    }
+    Else
+    {
+        SetVar<"=">(line:`isWall?`, 0);
+    }
+
+--------------------------
+
+Function<"IsInBounds">(var: result, num: x, num: z)
+    SetVar<"=">(line:`result`, 0);
+    IfVar<"InRange | NOT">(line:`x`, 0, 38)
+    {
+        Control<"Return">();
+    }
+    IfVar<"InRange | NOT">(line:`z`, 0, 38)
+    {
+        Control<"Return">();
+    }
+    SetVar<"=">(line:`result`, 1);
+
+--------------------------
+
+Function<"ManhattanDist">(item:rail, var: dist, num: x1, num: z1, num: x2, num: z2)
+    SetVar<"AbsoluteValue">(line:`x`, %math(%var(x1) - %var(x2)));
+    SetVar<"AbsoluteValue">(line:`z`, %math(%var(z1) - %var(z2)));
+    SetVar<"+">(line:`dist`, line:`x`, line:`z`);
+
+--------------------------
+
+Function<"PlaceCore">(item:magenta_stained_glass, var: success?, str: color, num: x, num: z, num: isInitialPlacement)
+    SetVar<"=">(line:`success?`, 0);
+    SetVar<"ListLength">(line:`alreadyPlaced`, game:`%var(ID).%var(color)Cores`);
+    IfVar<">=">(line:`alreadyPlaced`, game:`%var(ID).MaxCores`)
+    {
+        SelectObject<"PlayerName">(game:`%var(ID).%var(color)Player`);
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You have already placed the maximum number of cores.")@AllPlayers;
+        SelectObject<"Reset">();
+        Control<"Return">();
+    }
+    IfVar<"ListContains">(game:`%var(ID).%var(color)Cores`, '%var(x)|%var(z)')
+    {
+        SelectObject<"PlayerName">(game:`%var(ID).%var(color)Player`);
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>There is already a core here.")@AllPlayers;
+        SelectObject<"Reset">();
+        Control<"Return">();
+    }
+    IfVar<"=">(line:`isInitialPlacement`, 1)
+    {
+        IfVar<"=">('%var(x)|%var(z)', '0|9', '9|0')
+        {
+            SelectObject<"PlayerName">(game:`%var(ID).%var(color)Player`);
+            PlayerAction<"SendMessage">("<red>» Error! </red><gray>You cannot place a core on a starting position.")@AllPlayers;
+            SelectObject<"Reset">();
+            Control<"Return">();
+        }
+    }
+    SetVar<"AppendValue">(game:`%var(ID).%var(color)Cores`, '%var(x)|%var(z)');
+    SetVar<"=">(line:`success?`, 1);
+
+--------------------------
+
+Function<"TileDistance">(item:detector_rail, var: dist, str: tile1, str: tile2)
+    CallFunction<"TileToCoords">(line:`x1`, line:`z1`, line:`tile1`);
+    CallFunction<"TileToCoords">(line:`x2`, line:`z2`, line:`tile2`);
+    CallFunction<"ManhattanDist">(line:`dist`, line:`x1`, line:`z1`, line:`x2`, line:`z2`);
+
+--------------------------
+
+Function<"TileToLocation">(item:map, var: tileCenter, str: tileID)
+    SetVar<"TrimString">(line:`x`, line:`tileID`, 1, 1);
+    SetVar<"TrimString">(line:`z`, line:`tileID`, 3, 3);
+    SetVar<"ShiftAllAxes">(line:`tileCenter`, game:`%var(ID).Corner`, %math(%var(x) * 4), 0, %math(%var(z) * 4));
+
+--------------------------
+
+Function<"TileToCoords">(item:slime_ball, var: x, var: z, str: tileID)
+    SetVar<"TrimString">(line:`x`, line:`tileID`, 1, 1);
+    SetVar<"ParseNumber">(line:`x`);
+    SetVar<"TrimString">(line:`z`, line:`tileID`, 3, 3);
+    SetVar<"ParseNumber">(line:`z`);
+
+--------------------------
+
+Function<"IngameLoop">()
+    SetVar<"=">(local:`ID`, game:`%default room`);
+    PlayerAction<"RemovePotion">(Pot{Jump Boost -100 for ∞});
+    PlayerAction<"SetFoodLevel">(20);
+    PlayerAction<"SetSpeed">(100)#SpeedType=Both;
+    Repeat<"ForEach">(line:`core`, game:`%var(ID).%var(%default color)Cores`)
+    {
+        CallFunction<"TileToLocation">(line:`center`, line:`core`);
+        SetVar<"ShiftAllAxes">(line:`c1`, line:`center`, 1, -1, 1);
+        SetVar<"ShiftAllAxes">(line:`c2`, line:`center`, -1, -1, -1);
+        PlayerAction<"DisplayBlock">(line:`c1`, line:`c2`, game:`%var(%default color)Powder`);
+    }
+    Repeat<"ForEach">(line:`core`, game:`%var(ID).%var(%var(%default color)Opposite)Cores`)
+    {
+        CallFunction<"TileToLocation">(line:`center`, line:`core`);
+        SetVar<"ShiftAllAxes">(line:`c1`, line:`center`, 1, -1, 1);
+        SetVar<"ShiftAllAxes">(line:`c2`, line:`center`, -1, -1, -1);
+        PlayerAction<"DisplayBlock">(line:`c1`, line:`c2`, game:`%var(%var(%default color)Opposite)Powder`);
+    }
+
+--------------------------
+
+Function<"ClearGrid">()
+    SetVar<"ShiftAllAxes">(line:`c1`, game:`%var(ID).Corner`, -2, -1, -2);
+    SetVar<"ShiftAllAxes">(line:`c2`, game:`%var(ID).Corner`, 37, -1, 3);
+    Repeat<"Multiple">(13)
+    {
+        PlayerAction<"ClearDispBlock">(line:`c1`, line:`c2`);
+        SetVar<"ShiftOnAxis">(line:`c1`, 3)#Coordinate=Z;
+        SetVar<"ShiftOnAxis">(line:`c2`, 3)#Coordinate=Z;
+    }
+
+--------------------------
+
+Process<"PlayerLoopH">()
+    Repeat<"Forever">()
+    {
+        StartProcess<"PlayerLoop">();
+        Control<"Wait">(5);
+    }
+
+--------------------------
+
+Process<"GameLoopH">()
+    Repeat<"Forever">()
+    {
+        StartProcess<"GameLoop">()#TargetMode=WithNoTargets;
+        Control<"Wait">();
+    }
+
+--------------------------
+
+Process<"GameLoop">()
+    SetVar<"=">(line:`i`, 0);
+    Repeat<"ForEach">(line:`room`, game:`rooms`)
+    {
+        SetVar<"+=">(line:`i`);
+        IfVar<"=">(line:`room`, 'full')
+        {
+            CallFunction<"RoomLoop">(line:`i`);
+        }
+    }
+
+--------------------------
+
+Process<"PlayerLoop">()
+    IfVar<"=">(game:`%default mode`, 'Spawn', 'Verification')
+    {
+        PlayerAction<"SetFoodLevel">(6);
+        PlayerAction<"GivePotion">(Pot{Jump Boost -100 for ∞})#ShowIcon=False#EffectParticles=None;
+        PlayerAction<"SetSpeed">(0);
+    }
+    IfVar<"=">(game:`%default mode`, 'Ingame')
+    {
+        CallFunction<"IngameLoop">();
+    }
+
+--------------------------
+

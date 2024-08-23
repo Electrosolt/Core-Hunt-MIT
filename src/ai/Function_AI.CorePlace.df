@@ -1,6 +1,36 @@
 Function<"AI.CorePlace">(str: color)
-    SetVar<"CreateList">(game:`%var(ID).%var(color)Cores`);
-    Repeat<"Multiple">(3)
+    Repeat<"Multiple">(game:`%var(ID).MaxCores`)
     {
-        SetVar<"Vector">();
+        SetVar<"=">(line:`distanceThreshold`, 8);
+        Repeat<"Forever">()
+        {
+            SetVar<"=">(line:`x`, %random(0,9));
+            SetVar<"=">(line:`z`, %random(0,9));
+            SetVar<"=">(line:`pos`, '%var(x)|%var(z)');
+            IfVar<"ListContains">(game:`%var(ID).%var(color)Cores`, line:`pos`)
+            {
+                Control<"Skip">();
+            }
+            SetVar<"=">(line:`minDistance`, 100);
+            Repeat<"ForEach">(line:`core`, game:`%var(ID).%var(color)Cores`)
+            {
+                CallFunction<"TileDistance">(line:`dist`, line:`pos`, line:`core`);
+                SetVar<"MinNumber">(line:`minDistance`, line:`minDistance`, line:`dist`);
+            }
+            IfVar<"<=">(line:`minDistance`, line:`distanceThreshold`)
+            {
+                SetVar<"-=">(line:`distanceThreshold`, 0.5);
+                Control<"Skip">();
+            }
+            CallFunction<"TileDistance">(line:`spawnDist`, line:`pos`, game:`%var(%var(color)Opposite)StartCoords`);
+            IfVar<"<=">(line:`spawnDist`, 1)
+            {
+                Control<"Skip">();
+            }
+            CallFunction<"PlaceCore">(line:`success`, line:`color`, line:`x`, line:`z`, 1);
+            IfVar<"=">(line:`success`, 1)
+            {
+                Control<"StopRepeat">();
+            }
+        }
     }

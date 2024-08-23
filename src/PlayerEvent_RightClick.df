@@ -1,6 +1,29 @@
 PlayerEvent<"RightClick">()
+    GameAction<"CancelEvent">();
+    IfVar<"= | NOT">(game:`%default mode`, 'Ingame')
+    {
+        Control<"End">();
+    }
     SetVar<"=">(local:`ID`, game:`%default room`);
-    PlayerAction<"SendMessage">("<dark_gray>• </dark_gray><gray>ID:", local:`ID`);
-    CallFunction<"GetClickedThing">(line:`valid`, line:`isWall`, line:`result`, GV(Event Block Location));
-    PlayerAction<"SendMessage">("<dark_gray>• </dark_gray><gray>Valid? <#dddddd>%var(valid)</#dddddd> | Is Wall? <#dddddd>%var(isWall)");
-    PlayerAction<"SendMessage">("<dark_gray>• </dark_gray><gray>Result: </gray><#dddddd>%var(result)");
+    CallFunction<"GetClickedThing">(line:`valid`, line:`isWall`, line:`tileX`, line:`tileZ`, line:`wallID`, GV(Event Block Location));
+    IfVar<"=">(game:`%var(ID).Status`, 'PlacingCores')
+    {
+        IfVar<"=">(line:`isWall`, 1)
+        {
+            PlayerAction<"SendMessage">("<red>» Error! </red><gray>You can't place cores on walls.");
+            Control<"Return">();
+        }
+        IfVar<"=">(line:`valid`, 0)
+        {
+            PlayerAction<"SendMessage">("<red>» Error! </red><gray>You can't place a core here.");
+            Control<"Return">();
+        }
+        IfPlayer<"IsHolding">(game:`%var(%default color)Core`)
+        {
+            CallFunction<"PlaceCore">(line:`success`, game:`%default color`, line:`tileX`, line:`tileZ`, 1);
+            IfVar<"=">(line:`success`, 1)
+            {
+                PlayerAction<"RemoveItems">(game:`%var(%default color)Core`);
+            }
+        }
+    }

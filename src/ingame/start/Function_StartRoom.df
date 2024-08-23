@@ -1,4 +1,4 @@
-Function<"StartRoom">(num: IDNum, loc: corner, loc: redStart, loc: blueStart, str: redPlayer, str: bluePlayer)
+Function<"StartRoom">(item:gold_block, num: IDNum, loc: corner, loc: redStart, loc: blueStart, str: redPlayer, str: bluePlayer)
     SetVar<"=">(local:`ID`, 'Room%var(IDNum)');
     SetVar<"SetListValue">(game:`rooms`, line:`IDNum`, 'full');
     SetVar<"=">(game:`%var(ID).Status`, 'Startup');
@@ -8,5 +8,7 @@ Function<"StartRoom">(num: IDNum, loc: corner, loc: redStart, loc: blueStart, st
     SetVar<"=">(game:`%var(ID).BlueStart`, line:`blueStart`);
     SetVar<"=">(game:`%var(ID).Corner`, line:`corner`);
     SetVar<"=">(game:`%var(ID).MaxCores`, 3);
+    SetVar<"CreateList">(game:`%var(ID).RedCores`);
+    SetVar<"CreateList">(game:`%var(ID).BlueCores`);
     CallFunction<"PlayerEnter">('Red');
     CallFunction<"PlayerEnter">('Blue');

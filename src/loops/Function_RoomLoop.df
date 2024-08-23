@@ -9,6 +9,7 @@ Function<"RoomLoop">(num: IDNum)
             SetVar<"=">(game:`%var(ID).LoopTick`, 0);
             CallFunction<"CorePlaceStart">('Red');
             CallFunction<"CorePlaceStart">('Blue');
+            CallFunction<"">();
         }
     }
     IfVar<"=">(game:`%var(ID).Status`, 'PlacingCores')

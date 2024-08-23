@@ -7,3 +7,9 @@ Function<"Constants">()
     SetVar<"=">(game:`RedColor`, "<#ee3020>");
     SetVar<"=">(game:`BlueColor`, "<#4488ff>");
     SetVar<"=">(game:`MidColor`, "<#bb4499>");
+    SetVar<"=">(game:`RedParticle`, PFX{Dust|colorVariation=0|size=1|rgb=16729156|sizeVariation=0});
+    SetVar<"=">(game:`BlueParticle`, PFX{Dust|colorVariation=0|size=1|rgb=26367|sizeVariation=0});
+    SetVar<"=">(game:`RedPowder`, item:red_concrete_powder);
+    SetVar<"=">(game:`BluePowder`, item:blue_concrete_powder);
+    SetVar<"=">(game:`RedStartCoords`, '9|0');
+    SetVar<"=">(game:`BlueStartCoords`, '0|9');

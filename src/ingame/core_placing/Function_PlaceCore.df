@@ -1,0 +1,29 @@
+Function<"PlaceCore">(item:magenta_stained_glass, var: success?, str: color, num: x, num: z, num: isInitialPlacement)
+    SetVar<"=">(line:`success?`, 0);
+    SetVar<"ListLength">(line:`alreadyPlaced`, game:`%var(ID).%var(color)Cores`);
+    IfVar<">=">(line:`alreadyPlaced`, game:`%var(ID).MaxCores`)
+    {
+        SelectObject<"PlayerName">(game:`%var(ID).%var(color)Player`);
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You have already placed the maximum number of cores.")@AllPlayers;
+        SelectObject<"Reset">();
+        Control<"Return">();
+    }
+    IfVar<"ListContains">(game:`%var(ID).%var(color)Cores`, '%var(x)|%var(z)')
+    {
+        SelectObject<"PlayerName">(game:`%var(ID).%var(color)Player`);
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>There is already a core here.")@AllPlayers;
+        SelectObject<"Reset">();
+        Control<"Return">();
+    }
+    IfVar<"=">(line:`isInitialPlacement`, 1)
+    {
+        IfVar<"=">('%var(x)|%var(z)', '0|9', '9|0')
+        {
+            SelectObject<"PlayerName">(game:`%var(ID).%var(color)Player`);
+            PlayerAction<"SendMessage">("<red>» Error! </red><gray>You cannot place a core on a starting position.")@AllPlayers;
+            SelectObject<"Reset">();
+            Control<"Return">();
+        }
+    }
+    SetVar<"AppendValue">(game:`%var(ID).%var(color)Cores`, '%var(x)|%var(z)');
+    SetVar<"=">(line:`success?`, 1);

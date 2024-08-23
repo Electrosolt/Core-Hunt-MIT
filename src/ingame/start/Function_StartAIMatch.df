@@ -1,7 +1,6 @@
 Function<"StartAIMatch">()
-    PlayerAction<"SendMessage">("ran");
     CallFunction<"FindRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`);
-    PlayerAction<"SendMessage">(line:`roomNumber`);
+    PlayerAction<"SendMessage">("<dark_gray>» </dark_gray><gray>Found a match in Room %var(roomNumber)");
     IfVar<"=">(line:`roomNumber`, 0)
     {
         Control<"Return">();

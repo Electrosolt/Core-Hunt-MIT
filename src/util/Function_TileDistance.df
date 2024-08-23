@@ -1,0 +1,4 @@
+Function<"TileDistance">(item:detector_rail, var: dist, str: tile1, str: tile2)
+    CallFunction<"TileToCoords">(line:`x1`, line:`z1`, line:`tile1`);
+    CallFunction<"TileToCoords">(line:`x2`, line:`z2`, line:`tile2`);
+    CallFunction<"ManhattanDist">(line:`dist`, line:`x1`, line:`z1`, line:`x2`, line:`z2`);

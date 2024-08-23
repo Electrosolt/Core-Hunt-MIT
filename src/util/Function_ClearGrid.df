@@ -1,0 +1,9 @@
+Function<"ClearGrid">()
+    SetVar<"ShiftAllAxes">(line:`c1`, game:`%var(ID).Corner`, -2, -1, -2);
+    SetVar<"ShiftAllAxes">(line:`c2`, game:`%var(ID).Corner`, 37, -1, 3);
+    Repeat<"Multiple">(13)
+    {
+        PlayerAction<"ClearDispBlock">(line:`c1`, line:`c2`);
+        SetVar<"ShiftOnAxis">(line:`c1`, 3)#Coordinate=Z;
+        SetVar<"ShiftOnAxis">(line:`c2`, 3)#Coordinate=Z;
+    }

@@ -7,7 +7,5 @@ Process<"PlayerLoop">()
     }
     IfVar<"=">(game:`%default mode`, 'Ingame')
     {
-        PlayerAction<"RemovePotion">(Pot{Jump Boost -100 for ∞});
-        PlayerAction<"SetFoodLevel">(20);
-        PlayerAction<"SetSpeed">(100)#SpeedType=Both;
+        CallFunction<"IngameLoop">();
     }

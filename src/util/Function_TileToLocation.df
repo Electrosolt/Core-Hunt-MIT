@@ -1,0 +1,4 @@
+Function<"TileToLocation">(item:map, var: tileCenter, str: tileID)
+    SetVar<"TrimString">(line:`x`, line:`tileID`, 1, 1);
+    SetVar<"TrimString">(line:`z`, line:`tileID`, 3, 3);
+    SetVar<"ShiftAllAxes">(line:`tileCenter`, game:`%var(ID).Corner`, %math(%var(x) * 4), 0, %math(%var(z) * 4));

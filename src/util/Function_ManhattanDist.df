@@ -1,4 +1,4 @@
-Function<"ManhattanDist">(var: dist, num: x1, num: z1, num: x2, num: z2)
+Function<"ManhattanDist">(item:rail, var: dist, num: x1, num: z1, num: x2, num: z2)
     SetVar<"AbsoluteValue">(line:`x`, %math(%var(x1) - %var(x2)));
     SetVar<"AbsoluteValue">(line:`z`, %math(%var(z1) - %var(z2)));
     SetVar<"+">(line:`dist`, line:`x`, line:`z`);

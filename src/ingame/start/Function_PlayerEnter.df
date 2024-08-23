@@ -2,6 +2,7 @@ Function<"PlayerEnter">(str: color)
     SelectObject<"PlayerName">(game:`%var(ID).%var(color)Player`);
     SetVar<"=">(game:`%selected mode`, 'Ingame');
     SetVar<"=">(game:`%default room`, local:`ID`);
+    SetVar<"=">(game:`%default color`, line:`color`);
     PlayerAction<"Teleport">(game:`%var(ID).%var(color)Start`);
     PlayerAction<"SetAllowFlight">();
     PlayerAction<"SetFlying">();
@@ -9,4 +10,5 @@ Function<"PlayerEnter">(str: color)
     SetVar<"StyledText">(line:`vsText`, "<gray>vs.<space>", game:`%var(%var(color)Opposite)Color`, game:`%var(ID).%var(%var(color)Opposite)Player`);
     PlayerAction<"SendTitle">("<gradient:red:blue>⏴ ᴄᴏʀᴇ ʜᴜɴᴛ ⏵", line:`vsText`);
     PlayerAction<"PlayEntitySound">(Sound{Ender Dragon (Note Block)|p=2|vol=0.5}, '%selected');
+    CallFunction<"ClearGrid">();
     SelectObject<"Reset">();
