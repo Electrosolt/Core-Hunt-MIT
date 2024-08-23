@@ -1,6 +1,7 @@
 Function<"PlayerEnter">(str: color)
     SelectObject<"PlayerName">(game:`%var(ID).%var(color)Player`);
     SetVar<"=">(game:`%selected mode`, 'Ingame');
+    SetVar<"=">(game:`%default room`, local:`ID`);
     PlayerAction<"Teleport">(game:`%var(ID).%var(color)Start`);
     PlayerAction<"SetAllowFlight">();
     PlayerAction<"SetFlying">();

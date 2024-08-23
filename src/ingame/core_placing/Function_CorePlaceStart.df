@@ -1,0 +1,12 @@
+Function<"CorePlaceStart">(str: color)
+    IfVar<"=">(game:`%var(ID).%var(color)Player`, 'AI')
+    {
+        CallFunction<"AI.CorePlace">(line:`color`);
+    }
+    SelectObject<"PlayerName">(game:`%var(ID).%var(color)Player`);
+    PlayerAction<"PlaySound">(Sound{Experience Orb Pickup});
+    SetVar<"SetItemAmount">(line:`itemstack`, game:`%var(color)Core`, game:`%var(ID).MaxCores`);
+    PlayerAction<"GiveItems">(line:`itemstack`);
+    SetVar<"StyledText">(line:`title`, game:`MidColor`, "Place your Cores!");
+    PlayerAction<"SendTitle">(line:`title`, "<gray>Right click while holding them!");
+    SelectObject<"Reset">();

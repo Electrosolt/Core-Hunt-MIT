@@ -6,3 +6,4 @@ Function<"Constants">()
     SetVar<"=">(game:`BlueOpposite`, 'Red');
     SetVar<"=">(game:`RedColor`, "<#ee3020>");
     SetVar<"=">(game:`BlueColor`, "<#4488ff>");
+    SetVar<"=">(game:`MidColor`, "<#bb4499>");

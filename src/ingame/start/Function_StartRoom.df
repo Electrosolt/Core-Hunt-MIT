@@ -6,5 +6,7 @@ Function<"StartRoom">(num: IDNum, loc: corner, loc: redStart, loc: blueStart, st
     SetVar<"=">(game:`%var(ID).BluePlayer`, line:`bluePlayer`);
     SetVar<"=">(game:`%var(ID).RedStart`, line:`redStart`);
     SetVar<"=">(game:`%var(ID).BlueStart`, line:`blueStart`);
+    SetVar<"=">(game:`%var(ID).Corner`, line:`corner`);
+    SetVar<"=">(game:`%var(ID).MaxCores`, 3);
     CallFunction<"PlayerEnter">('Red');
     CallFunction<"PlayerEnter">('Blue');

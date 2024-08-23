@@ -1,0 +1,6 @@
+Function<"AI.CorePlace">(str: color)
+    SetVar<"CreateList">(game:`%var(ID).%var(color)Cores`);
+    Repeat<"Multiple">(3)
+    {
+        SetVar<"Vector">();
+    }

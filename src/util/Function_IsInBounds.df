@@ -1,0 +1,11 @@
+Function<"IsInBounds">(var: result, num: x, num: z)
+    SetVar<"=">(line:`result`, 0);
+    IfVar<"InRange | NOT">(line:`x`, 0, 38)
+    {
+        Control<"Return">();
+    }
+    IfVar<"InRange | NOT">(line:`z`, 0, 38)
+    {
+        Control<"Return">();
+    }
+    SetVar<"=">(line:`result`, 1);

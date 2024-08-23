@@ -1,0 +1,39 @@
+Function<"GetClickedThing">(var: valid?, var: isWall?, var: result, loc: loc)
+    SetVar<"VectorBetween">(line:`vec`, game:`%var(ID).Corner`, line:`loc`);
+    SetVar<"SetVectorComp">(line:`vec`, 0)#Component=Y;
+    SetVar<"AddVectors">(line:`vec`, line:`vec`, ⟨1,0,1⟩);
+    PlayerAction<"SendMessage">("<dark_gray>• </dark_gray><gray>Pre-Division: %var(vec)");
+    SetVar<"GetVectorComp">(line:`x`, line:`vec`);
+    SetVar<"GetVectorComp">(line:`z`, line:`vec`)#Component=Z;
+    CallFunction<"IsInBounds">(line:`valid?`, line:`x`, line:`z`);
+    IfVar<"=">(line:`valid?`, 0)
+    {
+        Control<"Return">();
+    }
+    SetVar<"/">(line:`divided`, line:`vec`, ⟨4,1,4⟩)#DivisionMode=FloorResult;
+    IfVar<"=">(3, %math(%var(x) % 4), %math(%var(z) % 4))
+    {
+        SetVar<"=">(line:`isWall?`, 1);
+        SetVar<"=">(line:`xMod`, %math(%var(x) % 4));
+        SetVar<"=">(line:`zMod`, %math(%var(z) % 4));
+        SetVar<"GetVectorComp">(line:`xDiv`, line:`divided`);
+        SetVar<"GetVectorComp">(line:`zDiv`, line:`divided`)#Component=Z;
+        IfVar<"=">(line:`xMod`, line:`zMod`)
+        {
+            SetVar<"=">(line:`valid?`, 0);
+            Control<"Return">();
+        }
+        IfVar<">">(line:`xMod`, line:`zMod`)
+        {
+            SetVar<"String">(line:`result`, '%var(xDiv),%var(zDiv)|', %math(%var(xDiv) + 1), ',%var(zDiv)');
+        }
+        Else
+        {
+            SetVar<"String">(line:`result`, '%var(xDiv),%var(zDiv)|%var(xDiv),', %math(%var(zDiv) + 1));
+        }
+    }
+    Else
+    {
+        SetVar<"=">(line:`isWall?`, 0);
+        SetVar<"=">(line:`result`, line:`divided`);
+    }

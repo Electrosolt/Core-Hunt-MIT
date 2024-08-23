@@ -1,0 +1,38 @@
+Function<"RoomLoop">(num: IDNum)
+    SetVar<"=">(local:`ID`, 'Room%var(IDNum)');
+    IfVar<"=">(game:`%var(ID).Status`, 'Startup')
+    {
+        SetVar<"+=">(game:`%var(ID).LoopTick`);
+        IfVar<"=">(game:`%var(ID).LoopTick`, 70)
+        {
+            SetVar<"=">(game:`%var(ID).Status`, 'PlacingCores');
+            SetVar<"=">(game:`%var(ID).LoopTick`, 0);
+            CallFunction<"CorePlaceStart">('Red');
+            CallFunction<"CorePlaceStart">('Blue');
+        }
+    }
+    IfVar<"=">(game:`%var(ID).Status`, 'PlacingCores')
+    {
+        SetVar<"+=">(game:`%var(ID).LoopTick`);
+        CallFunction<"AllCoresPlaced">(line:`allCoresPlaced?`);
+        IfVar<"=">(line:`allCoresPlaced?`, 1)
+        {
+            SetVar<"=">(game:`%var(ID).LoopTick`, 1200);
+        }
+        IfVar<"<">(game:`%var(ID).LoopTick`, 1200)
+        {
+            SetVar<"-">(line:`ticksLeft`, 1200, game:`%var(ID).LoopTick`);
+            SetVar<"/">(line:`seconds`, line:`ticksLeft`, 20)#DivisionMode=FloorResult;
+            SetVar<"+=">(line:`seconds`);
+            SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
+            PlayerAction<"SetBossBar">("<#bb4499>Placing Cores <dark_gray>|</dark_gray> <#cc66aa>%var(seconds)s</#cc66aa> left!", line:`ticksLeft`, 1200);
+            IfVar<"=">(%math(%var(ticksLeft) % 20), 0)
+            {
+                PlayerAction<"PlayEntitySound">(Sound{Cherry Wood Button Click On|p=2|vol=0.7}, '%selected');
+            }
+            SelectObject<"Reset">();
+        }
+        Else
+        {
+        }
+    }

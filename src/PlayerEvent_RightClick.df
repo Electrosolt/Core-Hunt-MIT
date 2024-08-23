@@ -1,0 +1,6 @@
+PlayerEvent<"RightClick">()
+    SetVar<"=">(local:`ID`, game:`%default room`);
+    PlayerAction<"SendMessage">("<dark_gray>• </dark_gray><gray>ID:", local:`ID`);
+    CallFunction<"GetClickedThing">(line:`valid`, line:`isWall`, line:`result`, GV(Event Block Location));
+    PlayerAction<"SendMessage">("<dark_gray>• </dark_gray><gray>Valid? <#dddddd>%var(valid)</#dddddd> | Is Wall? <#dddddd>%var(isWall)");
+    PlayerAction<"SendMessage">("<dark_gray>• </dark_gray><gray>Result: </gray><#dddddd>%var(result)");

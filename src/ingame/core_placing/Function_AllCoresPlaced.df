@@ -1,0 +1,11 @@
+Function<"AllCoresPlaced">(var: allCoresPlaced?)
+    SetVar<"=">(line:`allCoresPlaced?`, 0);
+    SetVar<"ListLength">(line:`red`, game:`%var(ID).RedCores`);
+    SetVar<"ListLength">(line:`blue`, game:`%var(ID).BlueCores`);
+    IfVar<"=">(line:`red`, game:`%var(ID).MaxCores`)
+    {
+        IfVar<"=">(line:`blue`, game:`%var(ID).MaxCores`)
+        {
+            SetVar<"=">(line:`allCoresPlaced?`, 1);
+        }
+    }
