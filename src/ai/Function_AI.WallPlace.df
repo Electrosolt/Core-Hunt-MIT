@@ -1,1 +1,28 @@
 Function<"AI.WallPlace">(str: color)
+    Repeat<"Forever">()
+    {
+        SetVar<"RandomValue">(line:`strategy`, 'Random', 'Connect');
+        SetVar<"=">(line:`wall`, 0);
+        CallFunction<"AI.Wall.%var(strategy)">(line:`wall`);
+        IfVar<"=">(line:`wall`, 0)
+        {
+            Control<"Skip">();
+        }
+        SetVar<"SplitString">(line:`tiles`, line:`wall`, ':');
+        SetVar<"=">(line:`tile1`, '%index(tiles,1)');
+        SetVar<"=">(line:`tile2`, '%index(tiles,2)');
+        IfVar<"DictHasKey">(game:`%var(ID).Walls`, '%var(tile1):%var(tile2)', '%var(tile2):%var(tile1)')
+        {
+            Control<"Skip">();
+        }
+        CallFunction<"CheckWallValid">(line:`isValid`, line:`wall`);
+        IfVar<"=">(line:`isValid`, 0)
+        {
+            Control<"Skip">();
+        }
+        CallFunction<"TileToLocation">(line:`loc1`, line:`tile1`);
+        CallFunction<"TileToLocation">(line:`loc2`, line:`tile2`);
+        SetVar<"GetCenterLoc">(line:`loc`, line:`loc1`, line:`loc2`);
+        CallFunction<"PlaceWall">(line:`wall`, line:`loc`);
+        Control<"StopRepeat">();
+    }

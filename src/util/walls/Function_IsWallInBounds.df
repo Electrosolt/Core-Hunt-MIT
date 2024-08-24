@@ -1,0 +1,10 @@
+Function<"IsWallInBounds">(var: inBounds, str: wall)
+    SetVar<"=">(line:`inBounds`, 0);
+    CallFunction<"WallToTileCoords">(line:`x1`, line:`z1`, line:`x2`, line:`z2`, line:`wall`);
+    CallFunction<"IsInBounds">(line:`inBounds1`, line:`x1`, line:`z1`);
+    CallFunction<"IsInBounds">(line:`inBounds2`, line:`x2`, line:`z2`);
+    IfVar<"=">(0, line:`inBounds1`, line:`inBounds2`)
+    {
+        Control<"Return">();
+    }
+    SetVar<"=">(line:`inBounds`, 1);

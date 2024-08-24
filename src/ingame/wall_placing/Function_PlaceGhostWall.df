@@ -1,0 +1,13 @@
+Function<"PlaceGhostWall">(item:prismarine_wall, str: wallID, loc: wallLoc, item*: block = item:lime_stained_glass)
+    SetVar<"SetDictValue">(game:`%var(ID).Walls`, line:`wallID`, 0);
+    CallFunction<"GetWallCorners">(line:`wallLoc`, line:`c1`, line:`c2`);
+    Repeat<"Grid">(line:`lightLoc`, line:`c1`, line:`c2`)
+    {
+        IfGame<"BlockEquals">(line:`lightLoc`, 'air')
+        {
+            PlayerAction<"DisplayBlock">(line:`lightLoc`, item:light)@AllPlayers;
+        }
+    }
+    SetVar<"ShiftOnAxis">(line:`c1`, -1)#Coordinate=Y;
+    SetVar<"ShiftOnAxis">(line:`c2`, -1)#Coordinate=Y;
+    PlayerAction<"DisplayBlock">(line:`c1`, line:`c2`, line:`block`)@AllPlayers;

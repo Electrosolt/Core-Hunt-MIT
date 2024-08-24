@@ -1,4 +1,4 @@
-Function<"PlaceWall">(str: wallID, loc: wallLoc)
+Function<"PlaceWall">(item:prismarine_wall, str: wallID, loc: wallLoc)
     SetVar<"SetDictValue">(game:`%var(ID).Walls`, line:`wallID`, 0);
     CallFunction<"GetWallCorners">(line:`wallLoc`, line:`c1`, line:`c2`);
     Repeat<"Grid">(line:`lightLoc`, line:`c1`, line:`c2`)
@@ -11,3 +11,11 @@ Function<"PlaceWall">(str: wallID, loc: wallLoc)
     SetVar<"ShiftOnAxis">(line:`c1`, -1)#Coordinate=Y;
     SetVar<"ShiftOnAxis">(line:`c2`, -1)#Coordinate=Y;
     GameAction<"SetRegion">(line:`c1`, line:`c2`, item:lime_stained_glass);
+    IfVar<"=">(game:`%var(ID).Status`, 'PlacingWalls')
+    {
+        SetVar<"+=">(game:`%var(ID).InitialWallsPlaced`);
+        CallFunction<"ChangeWallTurn">(1);
+    }
+    SetVar<"ShiftAllAxes">(line:`c1`, -0.5, 0.5, -0.5);
+    SetVar<"ShiftAllAxes">(line:`c2`, 0.5, 0.5, 0.5);
+    PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, PFX{Firework|motionVariation=100|x=1|y=0|z=0})@AllPlayers;

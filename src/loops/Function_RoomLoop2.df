@@ -10,11 +10,42 @@ Function<"RoomLoop2">()
             SetVar<"+=">(line:`seconds`);
             SetVar<"StyledText">(line:`actionBar`, game:`%var(%var(ID).Turn)Color`, "%var(%var(ID).%var(%var(ID).Turn)Player) <gray>is Placing");
             SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
-            PlayerAction<"SetBossBar">("<#bb4499>Placing Walls <dark_gray>|</dark_gray> <#cc66aa>%var(seconds)s</#cc66aa> left | <#cc66aa>%var(%var(ID).InitialWallsPlaced)</#cc66aa>/<#cc66aa>%var(%var(ID).InitialWallMax)</#cc66aa> Walls Placed");
+            PlayerAction<"SetBossBar">("<#bb4499>Placing Walls <dark_gray>|</dark_gray> <#cc66aa>%var(seconds)s</#cc66aa> left | <#cc66aa>%var(%var(ID).InitialWallsPlaced)</#cc66aa>/<#cc66aa>%var(%var(ID).InitialWallMax)</#cc66aa> Walls Placed", line:`ticksLeft`, 300);
             PlayerAction<"ActionBar">(line:`actionBar`);
             SelectObject<"Reset">();
         }
         Else
         {
+            CallFunction<"ChangeWallTurn">();
         }
     }
+    IfVar<"=">(game:`%var(ID).Status`, 'FirstTurnStart')
+    {
+        SetVar<"+=">(game:`%var(ID).LoopTick`);
+        IfVar<"=">(game:`%var(ID).LoopTick`, 1)
+        {
+            SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
+            PlayerAction<"SetBossBar">("", 100, 100);
+            PlayerAction<"PlayEntitySound">('%selected', Sound{Trident Riptide (II)|p=1.5});
+            PlayerAction<"SendTitle">("<gradient:red:blue>⏴ Start! ⏵", 60, 5);
+            SelectObject<"Reset">();
+        }
+        IfVar<"=">(game:`%var(ID).LoopTick`, 60)
+        {
+            SetVar<"=">(game:`%var(ID).LoopTick`, 0);
+            SetVar<"=">(game:`%var(ID).Status`, 'TurnStart');
+        }
+    }
+    IfVar<"=">(game:`%var(ID).Status`, 'TurnStart')
+    {
+        SetVar<"RandomNumber">(game:`%var(ID).Energy`, 1, 6);
+        SetVar<"StyledText">(line:`energyText`, game:`EnergyColor`, "%var(%var(ID).Energy)⚡");
+        SetVar<"StyledText">(line:`turnText`, game:`%var(%var(ID).Turn)Color`, "%var(%var(ID).%var(%var(ID).Turn)Player)'s <gray>Turn");
+        SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
+        PlayerAction<"SendTitle">(line:`energyText`, line:`turnText`, 40, 5, 15);
+        PlayerAction<"PlayEntitySound">('%selected', Sound{Experience Orb Pickup|p=0.5|vol=0.8});
+        SelectObject<"Reset">();
+        SetVar<"=">(game:`%var(ID).Status`, 'Turn');
+        SetVar<"=">(game:`%var(ID).LoopTick`, 0);
+    }
+    CallFunction<"RoomLoop3">();

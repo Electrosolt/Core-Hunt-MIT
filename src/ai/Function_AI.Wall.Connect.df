@@ -1,0 +1,11 @@
+Function<"AI.Wall.Connect">(var: wall)
+    SetVar<"GetDictSize">(line:`size`, game:`%var(ID).Walls`);
+    IfVar<"=">(line:`size`, 0)
+    {
+        CallFunction<"AI.Wall.Random">(line:`wall`);
+        Control<"Return">();
+    }
+    SetVar<"GetDictKeys">(line:`placedWalls`, game:`%var(ID).Walls`);
+    SetVar<"RandomValue">(line:`adjWall`, line:`placedWalls`);
+    CallFunction<"GetAdjWalls">(line:`adjWalls`, line:`adjWall`);
+    SetVar<"RandomValue">(line:`wall`, line:`adjWalls`);

@@ -6,15 +6,13 @@ Function<"InitWallTick">(str: color)
             IfVar<">=">(game:`%var(ID).LoopTick`, 60)
             {
                 CallFunction<"AI.WallPlace">(line:`color`);
-                CallFunction<"ChangeWallTurn">();
             }
         }
         Else
         {
-            IfVar<">=">(game:`%var(ID).LoopTick`, 20)
+            IfVar<">=">(game:`%var(ID).LoopTick`, 30)
             {
                 CallFunction<"AI.WallPlace">(line:`color`);
-                CallFunction<"ChangeWallTurn">();
             }
         }
     }

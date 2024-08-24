@@ -1,0 +1,7 @@
+Function<"WallToTileCoords">(var: x1, var: z1, var: x2, var: z2, str: wall)
+    SetVar<"ReplaceString">(line:`parsed`, line:`wall`, ':', '|');
+    SetVar<"SplitString">(line:`parsed`, line:`parsed`, '|');
+    SetVar<"=">(line:`x1`, %index(parsed,1));
+    SetVar<"=">(line:`z1`, %index(parsed,2));
+    SetVar<"=">(line:`x2`, %index(parsed,3));
+    SetVar<"=">(line:`z2`, %index(parsed,4));

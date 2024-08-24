@@ -1,0 +1,15 @@
+Function<"MakeSortedWall">(var: wall, str: tile1, str: tile2)
+    CallFunction<"TileToCoords">(line:`x1`, line:`z1`, line:`tile1`);
+    CallFunction<"TileToCoords">(line:`x2`, line:`z2`, line:`tile2`);
+    IfVar<"=">(line:`x1`, line:`x2`)
+    {
+        SetVar<"MinNumber">(line:`min`, line:`z1`, line:`z2`);
+        SetVar<"MaxNumber">(line:`max`, line:`z1`, line:`z2`);
+        SetVar<"=">(line:`wall`, '%var(x1)|%var(min):%var(x2)|%var(max)');
+    }
+    Else
+    {
+        SetVar<"MinNumber">(line:`min`, line:`x1`, line:`x2`);
+        SetVar<"MaxNumber">(line:`max`, line:`x1`, line:`x2`);
+        SetVar<"=">(line:`wall`, '%var(min)|%var(z1):%var(max)|%var(z2)');
+    }

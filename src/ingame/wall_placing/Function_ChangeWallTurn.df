@@ -1,8 +1,23 @@
-Function<"ChangeWallTurn">()
+Function<"ChangeWallTurn">(num*: successful = 0)
+    SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
+    IfVar<"=">(line:`successful`, 1)
+    {
+        PlayerAction<"PlayEntitySound">(Sound{Beacon Activate|p=2|vol=0.7}, Sound{Deepslate Tiles Place|p=0.7|vol=1}, '%selected');
+    }
+    Else
+    {
+        SetVar<"StyledText">(line:`timeOutMessage`, "<#cc66dd>» Time's Up!<space>", game:`%var(%var(ID).Turn)Color`, game:`%var(ID).%var(%var(ID).Turn)Player`, "<space><gray>didn't place a wall in time! Skipping turn.");
+        PlayerAction<"SendMessage">(line:`timeOutMessage`);
+        PlayerAction<"PlayEntitySound">(Sound{Bass|p=1.5|vol=1}, '%selected');
+    }
+    SelectObject<"Reset">();
+    SetVar<"=">(game:`%var(ID).LoopTick`, 0);
     SetVar<"=">(game:`%var(ID).IsInitialWallTurn`, 0);
-    SetVar<"=">(game:`%var(ID).Turn`, game:`%var(%var(ID).Turn)Opposite`);
-    PlayerAction<"SendMessage">("<dark_gray>• </dark_gray><gray>Turn is now %var(%var(ID).Turn)")@AllPlayers;
     IfVar<"=">(game:`%var(ID).InitialWallsPlaced`, game:`%var(ID).InitialWallMax`)
     {
-        SetVar<"=">(game:`%var(ID).Status`, 'Turn');
+        SetVar<"=">(game:`%var(ID).Status`, 'FirstTurnStart');
+    }
+    Else
+    {
+        SetVar<"=">(game:`%var(ID).Turn`, game:`%var(%var(ID).Turn)Opposite`);
     }

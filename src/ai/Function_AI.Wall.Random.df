@@ -1,0 +1,7 @@
+Function<"AI.Wall.Random">(var: wall)
+    SetVar<"=">(line:`x`, %random(0,9));
+    SetVar<"=">(line:`z`, %random(0,9));
+    SetVar<"=">(line:`tile1`, '%var(x)|%var(z)');
+    CallFunction<"GetNeighbors">(line:`neighbors`, line:`tile1`);
+    SetVar<"RandomValue">(line:`tile2`, line:`neighbors`);
+    CallFunction<"MakeSortedWall">(line:`wall`, line:`tile1`, line:`tile2`);

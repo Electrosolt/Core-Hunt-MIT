@@ -14,3 +14,4 @@ Function<"Constants">()
     SetVar<"=">(game:`RedStartCoords`, '9|0');
     SetVar<"=">(game:`BlueStartCoords`, '0|9');
     SetVar<"=">(game:`WallItem`, item:polished_deepslate_wall);
+    SetVar<"=">(game:`EnergyColor`, "<#e0b0d0>");

@@ -1,0 +1,34 @@
+Function<"GetAdjWalls">(var: neighbors, str: wall)
+    SetVar<"CreateList">(line:`neighbors`);
+    CallFunction<"WallToTileCoords">(line:`x1`, line:`z1`, line:`x2`, line:`z2`, line:`wall`);
+    IfVar<"=">(line:`x1`, line:`x2`)
+    {
+        SetVar<"MinNumber">(line:`zMin`, line:`z1`, line:`z2`);
+        SetVar<"MaxNumber">(line:`zMax`, line:`z1`, line:`z2`);
+        SetVar<"String">(line:`wall1`, line:`x1`, '|', line:`zMin`, ':', %math(%var(x1) + 1), '|', line:`zMin`);
+        SetVar<"String">(line:`wall2`, line:`x1`, '|', line:`zMax`, ':', %math(%var(x1) + 1), '|', line:`zMax`);
+        SetVar<"String">(line:`wall3`, %math(%var(x1) - 1), '|', line:`zMin`, ':', line:`x1`, '|', line:`zMin`);
+        SetVar<"String">(line:`wall4`, %math(%var(x1) - 1), '|', line:`zMax`, ':', line:`x1`, '|', line:`zMax`);
+        SetVar<"String">(line:`wall5`, %math(%var(x1) + 1), '|', line:`zMin`, ':', %math(%var(x1) + 1), '|', line:`zMax`);
+        SetVar<"String">(line:`wall6`, %math(%var(x1) - 1), '|', line:`zMin`, ':', %math(%var(x1) - 1), '|', line:`zMax`);
+    }
+    Else
+    {
+        SetVar<"MinNumber">(line:`xMin`, line:`x1`, line:`x2`);
+        SetVar<"MaxNumber">(line:`xMax`, line:`x1`, line:`x2`);
+        SetVar<"String">(line:`wall1`, line:`xMin`, '|', line:`z1`, ':', line:`xMin`, '|', %math(%var(z1) + 1));
+        SetVar<"String">(line:`wall2`, line:`xMax`, '|', line:`z1`, ':', line:`xMax`, '|', %math(%var(z1) + 1));
+        SetVar<"String">(line:`wall3`, line:`xMin`, '|', %math(%var(z1) - 1), ':', line:`xMin`, '|', line:`z1`);
+        SetVar<"String">(line:`wall4`, line:`xMax`, '|', %math(%var(z1) - 1), ':', line:`xMax`, '|', line:`z1`);
+        SetVar<"String">(line:`wall5`, line:`xMin`, '|', %math(%var(z1) - 1), ':', line:`xMax`, '|', %math(%var(z1) - 1));
+        SetVar<"String">(line:`wall6`, line:`xMin`, '|', %math(%var(z1) + 1), ':', line:`xMax`, '|', %math(%var(z1) + 1));
+    }
+    SetVar<"CreateList">(line:`wallsToCheck`, line:`wall1`, line:`wall2`, line:`wall3`, line:`wall4`, line:`wall5`, line:`wall6`);
+    Repeat<"ForEach">(line:`toCheck`, line:`wallsToCheck`)
+    {
+        CallFunction<"IsWallInBounds">(line:`inBounds`, line:`toCheck`);
+        IfVar<"=">(line:`inBounds`, 1)
+        {
+            SetVar<"AppendValue">(line:`neighbors`, line:`toCheck`);
+        }
+    }

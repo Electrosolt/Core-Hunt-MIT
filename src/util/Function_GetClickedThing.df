@@ -4,7 +4,7 @@ Function<"GetClickedThing">(var: valid?, var: isWall?, var: tileX, var: tileZ, v
     SetVar<"AddVectors">(line:`vec`, line:`vec`, 〈1,0,1〉);
     SetVar<"GetVectorComp">(line:`x`, line:`vec`);
     SetVar<"GetVectorComp">(line:`z`, line:`vec`)#Component=Z;
-    CallFunction<"IsInBounds">(line:`valid?`, line:`x`, line:`z`);
+    CallFunction<"InBoundsRaw">(line:`valid?`, line:`x`, line:`z`);
     IfVar<"=">(line:`valid?`, 0)
     {
         Control<"Return">();

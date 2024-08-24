@@ -1,0 +1,6 @@
+Function<"WallToLoc">(var: location, str: wall)
+    SetVar<"TrimString">(line:`tile1`, line:`wall`, 1, 3);
+    SetVar<"TrimString">(line:`tile2`, line:`wall`, 5, 7);
+    CallFunction<"TileToLocation">(line:`loc1`, line:`tile1`);
+    CallFunction<"TileToLocation">(line:`loc2`, line:`tile2`);
+    SetVar<"GetCenterLoc">(line:`location`, line:`loc1`, line:`loc2`);

@@ -1,0 +1,3 @@
+Function<"EndTurn">()
+    SetVar<"=">(game:`%var(ID).Turn`, game:`%var(%var(ID).Turn)Opposite`);
+    SetVar<"=">(game:`%var(ID).Status`, 'TurnStart');
