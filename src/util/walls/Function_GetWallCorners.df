@@ -1,0 +1,20 @@
+Function<"GetWallCorners">(loc: wallLoc, var: corner1, var: corner2)
+    SetVar<"AlignLoc">(line:`wallLoc`)#Rotation=RemoveRotation;
+    SetVar<"VectorBetween">(line:`vec`, game:`%var(ID).Corner`, line:`wallLoc`);
+    SetVar<"AddVectors">(line:`vec`, line:`vec`, 〈1,0,1〉);
+    SetVar<"GetVectorComp">(line:`x`, line:`vec`);
+    SetVar<"GetVectorComp">(line:`z`, line:`vec`)#Component=Z;
+    SetVar<"RoundNumber">(line:`divX`, line:`x`, 4)#RoundMode=Floor;
+    SetVar<"RoundNumber">(line:`divZ`, line:`z`, 4)#RoundMode=Floor;
+    IfVar<"=">(%math(%var(x) % 4), 3)
+    {
+        SetVar<"SetAllCoords">(line:`corner1`, line:`x`, 0, %math(%var(divZ)-1));
+        SetVar<"SetAllCoords">(line:`corner2`, line:`x`, 0, %math(%var(divZ)+3));
+    }
+    Else
+    {
+        SetVar<"SetAllCoords">(line:`corner1`, %math(%var(divX)-1), 0, line:`z`);
+        SetVar<"SetAllCoords">(line:`corner2`, %math(%var(divX)+3), 0, line:`z`);
+    }
+    SetVar<"+">(line:`corner1`, line:`corner1`, game:`%var(ID).Corner`, [-1,0,-1]);
+    SetVar<"+">(line:`corner2`, line:`corner2`, game:`%var(ID).Corner`, [-1,0,-1]);

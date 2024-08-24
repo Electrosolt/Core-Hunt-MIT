@@ -1,0 +1,8 @@
+Function<"CloseRoom">(item:dark_oak_door, str: roomID)
+    SetVar<"TrimList">(line:`roomIndex`, line:`roomID`, 5, 5);
+    SetVar<"ParseNumber">(line:`roomIndex`, line:`roomIndex`);
+    SetVar<"SetListValue">(game:`rooms`, line:`roomIndex`, 'empty');
+    SelectObject<"PlayerName">(game:`%var(roomID).RedPlayer`, game:`%var(roomID).BluePlayer`);
+    StartProcess<"GoToSpawnUtil">()#TargetMode=ForEachInSelection;
+    SelectObject<"Reset">();
+    SetVar<"PurgeVars">('%var(roomID).')#MatchRequirement=AnyPartOfName;

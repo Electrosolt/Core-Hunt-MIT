@@ -1,0 +1,8 @@
+Function<"ChangeWallTurn">()
+    SetVar<"=">(game:`%var(ID).IsInitialWallTurn`, 0);
+    SetVar<"=">(game:`%var(ID).Turn`, game:`%var(%var(ID).Turn)Opposite`);
+    PlayerAction<"SendMessage">("<dark_gray>• </dark_gray><gray>Turn is now %var(%var(ID).Turn)")@AllPlayers;
+    IfVar<"=">(game:`%var(ID).InitialWallsPlaced`, game:`%var(ID).InitialWallMax`)
+    {
+        SetVar<"=">(game:`%var(ID).Status`, 'Turn');
+    }

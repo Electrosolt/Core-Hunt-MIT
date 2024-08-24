@@ -26,11 +26,11 @@ Function<"GetClickedThing">(var: valid?, var: isWall?, var: tileX, var: tileZ, v
         }
         IfVar<">">(line:`xMod`, line:`zMod`)
         {
-            SetVar<"String">(line:`wallID`, '%var(xDiv),%var(zDiv)|', %math(%var(xDiv) + 1), ',%var(zDiv)');
+            SetVar<"String">(line:`wallID`, '%var(xDiv)|%var(zDiv):', %math(%var(xDiv) + 1), '|%var(zDiv)');
         }
         Else
         {
-            SetVar<"String">(line:`wallID`, '%var(xDiv),%var(zDiv)|%var(xDiv),', %math(%var(zDiv) + 1));
+            SetVar<"String">(line:`wallID`, '%var(xDiv)|%var(zDiv):%var(xDiv)|', %math(%var(zDiv) + 1));
         }
     }
     Else

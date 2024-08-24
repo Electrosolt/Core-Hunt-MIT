@@ -10,5 +10,10 @@ Function<"StartRoom">(item:gold_block, num: IDNum, loc: corner, loc: redStart, l
     SetVar<"=">(game:`%var(ID).MaxCores`, 3);
     SetVar<"CreateList">(game:`%var(ID).RedCores`);
     SetVar<"CreateList">(game:`%var(ID).BlueCores`);
+    SetVar<"CreateDict">(game:`%var(ID).Walls`);
+    SetVar<"=">(game:`%var(ID).InitialWallMax`, 40);
+    SetVar<"=">(game:`%var(ID).InitialWallsPlaced`, 0);
+    SetVar<"=">(game:`%var(ID).Energy`, 0);
     CallFunction<"PlayerEnter">('Red');
     CallFunction<"PlayerEnter">('Blue');
+    GameAction<"CloneRegion">([50.5,41.5,0.5], [98.5,42.5,48.5], [56.5,42.5,6.5], game:`%var(ID).Corner`)#CloneBlockEntities=False;

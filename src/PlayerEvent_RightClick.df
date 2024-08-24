@@ -4,26 +4,37 @@ PlayerEvent<"RightClick">()
     {
         Control<"End">();
     }
+    SetVar<"Raycast">(line:`targetBlock`, GV(Eye Location), 150);
+    SetVar<"AlignLoc">(line:`targetBlock`)#Rotation=RemoveRotation;
     SetVar<"=">(local:`ID`, game:`%default room`);
-    CallFunction<"GetClickedThing">(line:`valid`, line:`isWall`, line:`tileX`, line:`tileZ`, line:`wallID`, GV(Event Block Location));
+    CallFunction<"GetClickedThing">(local:`valid`, local:`isWall`, local:`tileX`, local:`tileZ`, local:`wallID`, line:`targetBlock`);
+    SetVar<"GetCoord">(line:`boardY`, game:`%var(ID).Corner`)#Coordinate=Y;
+    SetVar<"SetCoord">(local:`clickedBlock`, line:`targetBlock`, %math(%var(boardY) - 1))#Coordinate=Y;
     IfVar<"=">(game:`%var(ID).Status`, 'PlacingCores')
     {
-        IfVar<"=">(line:`isWall`, 1)
+        IfVar<"=">(local:`isWall`, 1)
         {
             PlayerAction<"SendMessage">("<red>» Error! </red><gray>You can't place cores on walls.");
             Control<"Return">();
         }
-        IfVar<"=">(line:`valid`, 0)
+        IfVar<"=">(local:`valid`, 0)
         {
             PlayerAction<"SendMessage">("<red>» Error! </red><gray>You can't place a core here.");
             Control<"Return">();
         }
         IfPlayer<"IsHolding">(game:`%var(%default color)Core`)
         {
-            CallFunction<"PlaceCore">(line:`success`, game:`%default color`, line:`tileX`, line:`tileZ`, 1);
+            CallFunction<"PlaceCore">(line:`success`, game:`%default color`, local:`tileX`, local:`tileZ`, 1);
             IfVar<"=">(line:`success`, 1)
             {
                 PlayerAction<"RemoveItems">(game:`%var(%default color)Core`);
             }
+        }
+    }
+    IfVar<"=">(game:`%var(ID).Turn`, game:`%default color`)
+    {
+        IfPlayer<"IsHolding">(game:`WallItem`)
+        {
+            CallFunction<"AttemptWallPlace">();
         }
     }

@@ -9,7 +9,6 @@ Function<"RoomLoop">(num: IDNum)
             SetVar<"=">(game:`%var(ID).LoopTick`, 0);
             CallFunction<"CorePlaceStart">('Red');
             CallFunction<"CorePlaceStart">('Blue');
-            CallFunction<"">();
         }
     }
     IfVar<"=">(game:`%var(ID).Status`, 'PlacingCores')
@@ -35,5 +34,19 @@ Function<"RoomLoop">(num: IDNum)
         }
         Else
         {
+            IfVar<"=">(line:`allCoresPlaced?`, 1)
+            {
+                CallFunction<"EndCorePhase">();
+            }
+            Else
+            {
+                SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
+                PlayerAction<"SendMessage">("<red>» </red><gray>Not all cores were placed in time! Game ended.");
+                PlayerAction<"PlayEntitySound">(Sound{Respawn Anchor Deplete|p=0.5}, '%selected');
+                SelectObject<"Reset">();
+                CallFunction<"CloseRoom">(local:`ID`);
+                Control<"End">();
+            }
         }
     }
+    CallFunction<"RoomLoop2">();

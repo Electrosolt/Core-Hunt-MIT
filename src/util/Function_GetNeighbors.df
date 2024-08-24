@@ -1,0 +1,7 @@
+Function<"GetNeighbors">(var: neighbors, str: tile)
+    SetVar<"CreateList">(line:`neighbors`);
+    CallFunction<"TileToCoords">(line:`x`, line:`z`, line:`tile`);
+    CallFunction<"CheckNeighbor">(line:`neighbors`, %math(%var(x) + 1), line:`z`);
+    CallFunction<"CheckNeighbor">(line:`neighbors`, %math(%var(x) - 1), line:`z`);
+    CallFunction<"CheckNeighbor">(line:`neighbors`, line:`x`, %math(%var(z) + 1));
+    CallFunction<"CheckNeighbor">(line:`neighbors`, line:`x`, %math(%var(z) - 1));

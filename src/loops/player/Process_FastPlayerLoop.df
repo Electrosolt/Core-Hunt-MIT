@@ -1,0 +1,22 @@
+Process<"FastPlayerLoop">()
+    PlayerAction<"SetTabListInfo">(GV(CPU Usage))#PlayerListField=Footer;
+    IfVar<"=">(game:`%default mode`, 'Ingame')
+    {
+        SetVar<"=">(local:`ID`, game:`%default room`);
+        SetVar<"Raycast">(line:`blockHit`, GV(Eye Location), 100);
+        SetVar<"ShiftOnAxis">(line:`target`, line:`blockHit`, 0.1)#Coordinate=Y;
+        PlayerAction<"ParticleLine">(line:`target`, local:`lastPointerLoc`, PFX{Dust|colorVariation=0|size=0.5|rgb=16777215|sizeVariation=0}, 0.2);
+        SetVar<"=">(local:`lastPointerLoc`, line:`target`);
+        PlayerAction<"Particle">(line:`target`, PFX{Dust|colorVariation=0|size=0.5|rgb=16777215|sizeVariation=0});
+        IfPlayer<"IsHolding">(game:`WallItem`)
+        {
+            SetVar<"ShiftOnAxis">(line:`blockHit`, -0.5)#Coordinate=Y;
+            IfGame<"BlockEquals">(line:`blockHit`, item:light_gray_concrete_powder)
+            {
+                CallFunction<"GetWallCorners">(line:`blockHit`, line:`c1`, line:`c2`);
+                SetVar<"ShiftAllAxes">(line:`c1`, -0.5, -0.5, -0.5);
+                SetVar<"ShiftAllAxes">(line:`c2`, 0.5, -0.5, 0.5);
+                PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, PFX{Falling Dust|material=WHITE_CONCRETE});
+            }
+        }
+    }

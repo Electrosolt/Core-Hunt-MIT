@@ -1,6 +1,12 @@
 Process<"PlayerLoopH">()
     Repeat<"Forever">()
     {
-        StartProcess<"PlayerLoop">();
-        Control<"Wait">(5);
+        SetVar<"+=">(line:`i`);
+        IfVar<"=">(line:`i`, 5)
+        {
+            SetVar<"=">(line:`i`, 0);
+            StartProcess<"PlayerLoop">();
+        }
+        StartProcess<"FastPlayerLoop">()#LocalVariables=Share;
+        Control<"Wait">();
     }

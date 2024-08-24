@@ -1,0 +1,40 @@
+Function<"CheckWallValid">(var: isValid, str: wall)
+    SetVar<"=">(line:`isValid`, 0);
+    SetVar<"=">(line:`wallsToVerify`, game:`%var(ID).Walls`);
+    SetVar<"SetDictValue">(line:`wallsToVerify`, line:`wall`, 0);
+    SetVar<"CreateList">(line:`queue`, '0|0');
+    SetVar<"CreateDict">(line:`visited`);
+    Repeat<"Forever">()
+    {
+        SetVar<"ListLength">(line:`len`, line:`queue`);
+        IfVar<"=">(line:`len`, 0)
+        {
+            Control<"StopRepeat">();
+        }
+        SetVar<"PopListValue">(line:`tile`, line:`queue`, 1);
+        IfVar<"DictHasKey">(line:`visited`, line:`tile`)
+        {
+            Control<"Skip">();
+        }
+        SetVar<"SetDictValue">(line:`visited`, line:`tile`, 0);
+        CallFunction<"GetNeighbors">(line:`neighbors`, line:`tile`);
+        Repeat<"ForEach">(line:`neighbor`, line:`neighbors`)
+        {
+            IfVar<"DictHasKey">(line:`visited`, line:`neighbor`)
+            {
+                Control<"Skip">();
+            }
+            IfVar<"DictHasKey | NOT">(line:`wallsToVerify`, '%var(tile):%var(neighbor)')
+            {
+                IfVar<"DictHasKey | NOT">(line:`wallsToVerify`, '%var(neighbor):%var(tile)')
+                {
+                    SetVar<"AppendValue">(line:`queue`, line:`neighbor`);
+                }
+            }
+        }
+    }
+    SetVar<"GetDictSize">(line:`len`, line:`visited`);
+    IfVar<"=">(line:`len`, 100)
+    {
+        SetVar<"=">(line:`isValid`, 1);
+    }

@@ -8,5 +8,5 @@ Function<"CorePlaceStart">(str: color)
     SetVar<"SetItemAmount">(line:`itemstack`, game:`%var(color)Core`, game:`%var(ID).MaxCores`);
     PlayerAction<"GiveItems">(line:`itemstack`);
     SetVar<"StyledText">(line:`title`, game:`MidColor`, "Place your Cores!");
-    PlayerAction<"SendTitle">(line:`title`, "<gray>Right click while holding them!");
+    PlayerAction<"SendTitle">(line:`title`, "<gray>Right click while holding them!", 60, 5);
     SelectObject<"Reset">();

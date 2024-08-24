@@ -1,0 +1,8 @@
+Function<"CheckNeighbor">(var: list, num: x, num: z)
+    IfVar<"InRange">(line:`x`, 0, 9)
+    {
+        IfVar<"InRange">(line:`z`, 0, 9)
+        {
+            SetVar<"AppendValue">(line:`list`, '%var(x)|%var(z)');
+        }
+    }

@@ -7,5 +7,10 @@ Function<"GoToSpawn">()
     Else
     {
         SetVar<"=">(game:`%default mode`, 'Spawn');
+        PlayerAction<"ClearInv">();
+        PlayerAction<"SendTitle">("", 0);
+        PlayerAction<"ActionBar">("");
+        PlayerAction<"RemoveBossBar">();
+        SetVar<"=">(game:`%default room`, 0);
         CallFunction<"MakeSpawnMenu">();
     }

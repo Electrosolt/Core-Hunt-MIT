@@ -1,0 +1,12 @@
+Function<"EndCorePhase">()
+    SetVar<"=">(game:`%var(ID).Status`, 'PlacingWalls');
+    SetVar<"=">(game:`%var(ID).LoopTick`, 0);
+    SetVar<"RandomValue">(game:`%var(ID).Turn`, 'Red', 'Blue');
+    SetVar<"=">(game:`%var(ID).IsInitialWallTurn`, 1);
+    SetVar<"StyledText">(line:`turnText`, game:`%var(%var(ID).Turn)Color`, "%var(%var(ID).%var(%var(ID).Turn)Player)'s <gray>Turn");
+    SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
+    PlayerAction<"SendTitle">("<#bb4499>Place %var(%var(ID).InitialWallMax) Walls!", line:`turnText`, 40, 0, 20);
+    PlayerAction<"PlaySound">(Sound{Experience Orb Pickup});
+    PlayerAction<"ClearInv">();
+    PlayerAction<"GiveItems">(game:`WallItem`);
+    SelectObject<"Reset">();

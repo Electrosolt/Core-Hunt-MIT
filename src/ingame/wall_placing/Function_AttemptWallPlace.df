@@ -1,0 +1,30 @@
+Function<"AttemptWallPlace">()
+    IfVar<"=">(0, local:`isWall`, local:`valid`)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may only place walls on wall spots.");
+        Control<"Return">();
+    }
+    CallFunction<"CheckWallValid">(line:`nonBlockingWall`, local:`wallID`);
+    IfVar<"=">(line:`nonBlockingWall`, 0)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>Walls may not make areas inaccessible.");
+        Control<"Return">();
+    }
+    IfVar<"DictHasKey">(game:`%var(ID).Walls`, local:`wallID`)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>There is already a wall here.");
+        Control<"Return">();
+    }
+    IfVar<"!=">(game:`%var(ID).Status`, 'PlacingWalls')
+    {
+        IfVar<">=">(game:`%var(ID).Energy`, 2)
+        {
+            SetVar<"-=">();
+        }
+        Else
+        {
+            PlayerAction<"SendMessage">("<red>» Error! </red><gray>Not enough energy. (Needs <#cc66aa>2⚡</#cc66aa>)");
+            Control<"Return">();
+        }
+    }
+    CallFunction<"PlaceWall">(local:`wallID`, local:`clickedBlock`);

@@ -13,3 +13,4 @@ Function<"Constants">()
     SetVar<"=">(game:`BluePowder`, item:blue_concrete_powder);
     SetVar<"=">(game:`RedStartCoords`, '9|0');
     SetVar<"=">(game:`BlueStartCoords`, '0|9');
+    SetVar<"=">(game:`WallItem`, item:polished_deepslate_wall);

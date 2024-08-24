@@ -1,4 +1,5 @@
 PlayerEvent<"Join">()
+    PlayerAction<"AdventureMode">();
     IfVar<"=">(GV(Player Count), 1)
     {
         CallFunction<"Constants">();

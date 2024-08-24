@@ -4,6 +4,7 @@ Process<"PlayerLoop">()
         PlayerAction<"SetFoodLevel">(6);
         PlayerAction<"GivePotion">(Pot{Jump Boost -100 for ∞})#ShowIcon=False#EffectParticles=None;
         PlayerAction<"SetSpeed">(0);
+        PlayerAction<"SetAllowFlight">()#AllowFlight=Disable;
     }
     IfVar<"=">(game:`%default mode`, 'Ingame')
     {

@@ -1,0 +1,20 @@
+Function<"InitWallTick">(str: color)
+    IfVar<"=">(game:`%var(ID).%var(color)Player`, 'AI')
+    {
+        IfVar<"=">(game:`%var(ID).IsInitialWallTurn`, 1)
+        {
+            IfVar<">=">(game:`%var(ID).LoopTick`, 60)
+            {
+                CallFunction<"AI.WallPlace">(line:`color`);
+                CallFunction<"ChangeWallTurn">();
+            }
+        }
+        Else
+        {
+            IfVar<">=">(game:`%var(ID).LoopTick`, 20)
+            {
+                CallFunction<"AI.WallPlace">(line:`color`);
+                CallFunction<"ChangeWallTurn">();
+            }
+        }
+    }

@@ -1,0 +1,2 @@
+Process<"GoToSpawnUtil">()
+    CallFunction<"GoToSpawn">();

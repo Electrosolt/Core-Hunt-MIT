@@ -1,0 +1,20 @@
+Function<"RoomLoop2">()
+    IfVar<"=">(game:`%var(ID).Status`, 'PlacingWalls')
+    {
+        SetVar<"+=">(game:`%var(ID).LoopTick`);
+        IfVar<"<">(game:`%var(ID).LoopTick`, 300)
+        {
+            CallFunction<"InitWallTick">(game:`%var(ID).Turn`);
+            SetVar<"-">(line:`ticksLeft`, 300, game:`%var(ID).LoopTick`);
+            SetVar<"/">(line:`seconds`, line:`ticksLeft`, 20)#DivisionMode=FloorResult;
+            SetVar<"+=">(line:`seconds`);
+            SetVar<"StyledText">(line:`actionBar`, game:`%var(%var(ID).Turn)Color`, "%var(%var(ID).%var(%var(ID).Turn)Player) <gray>is Placing");
+            SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
+            PlayerAction<"SetBossBar">("<#bb4499>Placing Walls <dark_gray>|</dark_gray> <#cc66aa>%var(seconds)s</#cc66aa> left | <#cc66aa>%var(%var(ID).InitialWallsPlaced)</#cc66aa>/<#cc66aa>%var(%var(ID).InitialWallMax)</#cc66aa> Walls Placed");
+            PlayerAction<"ActionBar">(line:`actionBar`);
+            SelectObject<"Reset">();
+        }
+        Else
+        {
+        }
+    }
