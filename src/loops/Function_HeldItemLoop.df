@@ -1,0 +1,45 @@
+Function<"HeldItemLoop">()
+    SetVar<"ShiftOnAxis">(local:`blockHit`, -0.5)#Coordinate=Y;
+    SetVar<"=">(local:`currentTile`, game:`%var(ID).%var(%default color)Pos`);
+    IfPlayer<"IsHolding">(game:`MoveItem`)#HandSlot=MainHand
+    {
+        CallFunction<"GetNeighbors">(line:`neighbors`, local:`currentTile`);
+        Repeat<"ForEach">(line:`neighbor`, line:`neighbors`)
+        {
+            IfVar<"DictHasKey | NOT">(game:`%var(ID).Walls`, '%var(currentTile):%var(neighbor)')
+            {
+                IfVar<"DictHasKey | NOT">(game:`%var(ID).Walls`, '%var(neighbor):%var(currentTile)')
+                {
+                    CallFunction<"TileToLocation">(line:`loc`, line:`neighbor`);
+                    SetVar<"ShiftAllAxes">(line:`c1`, line:`loc`, -1.5, -0.5, -1.5);
+                    SetVar<"ShiftAllAxes">(line:`c2`, line:`loc`, 1.5, -0.5, 1.5);
+                    IfGame<"BlockEquals">(local:`blockHit`, item:gray_concrete_powder)
+                    {
+                        CallFunction<"GetClickedThing">(line:`valid`, line:`isWall`, line:`x`, line:`z`, line:`ignore`, local:`blockHit`);
+                        IfVar<"=">(line:`valid`, 1)
+                        {
+                            IfVar<"=">(line:`isWall`, 0)
+                            {
+                                IfVar<"=">('%var(x)|%var(z)', line:`neighbor`)
+                                {
+                                    PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, PFX{Composter});
+                                    Control<"Skip">();
+                                }
+                            }
+                        }
+                    }
+                    PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, PFX{Electric Spark|motionVariation=100|x=1|y=0|z=0});
+                }
+            }
+        }
+    }
+    IfPlayer<"IsHolding">(game:`WallItem`)#HandSlot=MainHand
+    {
+        IfGame<"BlockEquals">(local:`blockHit`, item:light_gray_concrete_powder)
+        {
+            CallFunction<"GetWallCorners">(local:`blockHit`, line:`c1`, line:`c2`);
+            SetVar<"ShiftAllAxes">(line:`c1`, -0.5, -0.5, -0.5);
+            SetVar<"ShiftAllAxes">(line:`c2`, 0.5, -0.5, 0.5);
+            PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, PFX{Falling Dust|material=WHITE_CONCRETE});
+        }
+    }

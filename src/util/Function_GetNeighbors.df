@@ -1,4 +1,4 @@
-Function<"GetNeighbors">(var: neighbors, str: tile)
+Function<"GetNeighbors">(item:player_head, var: neighbors, str: tile)
     SetVar<"CreateList">(line:`neighbors`);
     CallFunction<"TileToCoords">(line:`x`, line:`z`, line:`tile`);
     CallFunction<"CheckNeighbor">(line:`neighbors`, %math(%var(x) + 1), line:`z`);

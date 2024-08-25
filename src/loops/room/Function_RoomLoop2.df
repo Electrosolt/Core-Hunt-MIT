@@ -28,6 +28,8 @@ Function<"RoomLoop2">()
             PlayerAction<"SetBossBar">("", 100, 100);
             PlayerAction<"PlayEntitySound">('%selected', Sound{Trident Riptide (II)|p=1.5});
             PlayerAction<"SendTitle">("<gradient:red:blue>⏴ Start! ⏵", 60, 5);
+            PlayerAction<"ClearInv">();
+            PlayerAction<"SetHotbar">(game:`MoveItem`, game:`WallItem`, game:`Scan5x5Item`, game:`ScanZItem`, game:`ScanXItem`, game:`EndTurnItem`);
             SelectObject<"Reset">();
         }
         IfVar<"=">(game:`%var(ID).LoopTick`, 60)

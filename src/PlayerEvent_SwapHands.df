@@ -1,0 +1,2 @@
+PlayerEvent<"SwapHands">()
+    SetVar<"=">(game:`%var(%default room).Energy`, 6);

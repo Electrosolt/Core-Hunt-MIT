@@ -1,10 +1,6 @@
 Function<"ChangeWallTurn">(num*: successful = 0)
     SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
-    IfVar<"=">(line:`successful`, 1)
-    {
-        PlayerAction<"PlayEntitySound">(Sound{Beacon Activate|p=2|vol=0.7}, Sound{Deepslate Tiles Place|p=0.7|vol=1}, '%selected');
-    }
-    Else
+    IfVar<"=">(line:`successful`, 0)
     {
         SetVar<"StyledText">(line:`timeOutMessage`, "<#cc66dd>» Time's Up!<space>", game:`%var(%var(ID).Turn)Color`, game:`%var(ID).%var(%var(ID).Turn)Player`, "<space><gray>didn't place a wall in time! Skipping turn.");
         PlayerAction<"SendMessage">(line:`timeOutMessage`);

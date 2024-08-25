@@ -2,6 +2,20 @@ Function<"RoomLoop3">()
     IfVar<"=">(game:`%var(ID).Status`, 'Turn')
     {
         SetVar<"+=">(game:`%var(ID).LoopTick`);
+        IfVar<"=">(game:`%var(ID).LoopTick`, 1)
+        {
+            IfVar<"=">(game:`%var(ID).%var(%var(ID).Turn)Player`, 'AI')
+            {
+                SetVar<"=">(game:`%var(ID).LoopTick`, 1160);
+            }
+        }
+        IfVar<"=">(game:`%var(ID).Energy`, 0)
+        {
+            IfVar<"<">(game:`%var(ID).LoopTick`, 1100)
+            {
+                SetVar<"=">(game:`%var(ID).LoopTick`, 1100);
+            }
+        }
         IfVar<"<=">(game:`%var(ID).LoopTick`, 1200)
         {
             SetVar<"-">(line:`ticksLeft`, 1200, game:`%var(ID).LoopTick`);
@@ -10,11 +24,12 @@ Function<"RoomLoop3">()
             SetVar<"StyledText">(line:`bossBarText`, game:`%var(%var(ID).Turn)Color`, "%var(%var(ID).%var(%var(ID).Turn)Player)'s <gray>Turn |<space>", game:`MidColor`, line:`seconds`, "s <gray>left.");
             SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
             PlayerAction<"SetBossBar">(line:`bossBarText`, line:`ticksLeft`, 1200);
+            PlayerAction<"ActionBar">("<#cc66aa>⏴ <#dd88cc>Energy: <#e0b0d0>%var(%var(ID).Energy)⚡ <#cc66aa>⏵");
             SelectObject<"Reset">();
         }
         Else
         {
-            SetVar<"StyledText">(line:`timeUpMessage`, "<#cc66dd>» Time's Up!<space>", game:`%var(%var(ID).Turn)Color`, game:`%var(ID).%var(%var(ID).Turn)Player`, "<space><gray>didn't finish in time! Skipping turn.");
+            SetVar<"StyledText">(line:`timeUpMessage`, "<#cc66dd>» Time's Up!<space>", game:`%var(%var(ID).Turn)Color`, game:`%var(ID).%var(%var(ID).Turn)Player`, "'s<gray> turn is over! Switching turns.");
             SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
             PlayerAction<"SendMessage">(line:`timeUpMessage`);
             PlayerAction<"PlayEntitySound">('%selected', Sound{Bass|p=1.7});

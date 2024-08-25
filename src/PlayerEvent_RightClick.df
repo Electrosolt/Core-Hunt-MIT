@@ -33,8 +33,28 @@ PlayerEvent<"RightClick">()
     }
     IfVar<"=">(game:`%var(ID).Turn`, game:`%default color`)
     {
-        IfPlayer<"IsHolding">(game:`WallItem`)
+        IfPlayer<"IsHolding">(game:`MoveItem`)#HandSlot=MainHand
+        {
+            CallFunction<"AttemptMove">();
+        }
+        IfPlayer<"IsHolding">(game:`WallItem`)#HandSlot=MainHand
         {
             CallFunction<"AttemptWallPlace">();
+        }
+        IfPlayer<"IsHolding">(game:`Scan5x5Item`)#HandSlot=MainHand
+        {
+            CallFunction<"">();
+        }
+        IfPlayer<"IsHolding">(game:`ScanZItem`)
+        {
+            CallFunction<"">();
+        }
+        IfPlayer<"IsHolding">(game:`ScanXItem`)
+        {
+            CallFunction<"">();
+        }
+        IfPlayer<"IsHolding">(game:`EndTurnItem`)#HandSlot=MainHand
+        {
+            CallFunction<"">();
         }
     }

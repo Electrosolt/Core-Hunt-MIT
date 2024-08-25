@@ -1,4 +1,4 @@
-Function<"GetClickedThing">(var: valid?, var: isWall?, var: tileX, var: tileZ, var: wallID, loc: loc)
+Function<"GetClickedThing">(item:diamond_block, var: valid?, var: isWall?, var: tileX, var: tileZ, var: wallID, loc: loc)
     SetVar<"VectorBetween">(line:`vec`, game:`%var(ID).Corner`, line:`loc`);
     SetVar<"SetVectorComp">(line:`vec`, 0)#Component=Y;
     SetVar<"AddVectors">(line:`vec`, line:`vec`, 〈1,0,1〉);

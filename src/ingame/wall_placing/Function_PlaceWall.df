@@ -18,4 +18,7 @@ Function<"PlaceWall">(item:prismarine_wall, str: wallID, loc: wallLoc)
     }
     SetVar<"ShiftAllAxes">(line:`c1`, -0.5, 0.5, -0.5);
     SetVar<"ShiftAllAxes">(line:`c2`, 0.5, 0.5, 0.5);
-    PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, PFX{Firework|motionVariation=100|x=1|y=0|z=0})@AllPlayers;
+    SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
+    PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, PFX{Firework|motionVariation=100|x=1|y=0|z=0});
+    PlayerAction<"PlayEntitySound">(Sound{Beacon Activate|p=2|vol=0.7}, Sound{Deepslate Tiles Place|p=0.7|vol=1}, '%selected');
+    SelectObject<"Reset">();

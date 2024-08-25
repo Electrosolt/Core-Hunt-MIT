@@ -1,4 +1,4 @@
-Function<"GetAdjWalls">(var: neighbors, str: wall)
+Function<"GetAdjWalls">(item:red_sandstone_wall, var: neighbors, str: wall)
     SetVar<"CreateList">(line:`neighbors`);
     CallFunction<"WallToTileCoords">(line:`x1`, line:`z1`, line:`x2`, line:`z2`, line:`wall`);
     IfVar<"=">(line:`x1`, line:`x2`)

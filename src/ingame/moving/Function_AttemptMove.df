@@ -1,0 +1,36 @@
+Function<"AttemptMove">()
+    IfVar<"<">(game:`%var(ID).Energy`, 1)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>Not enough energy. (Needs <#cc66aa>1⚡</#cc66aa>)");
+        Control<"Return">();
+    }
+    IfVar<"=">(local:`valid`, 0)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may only move to empty tiles.");
+        Control<"Return">();
+    }
+    IfVar<"=">(local:`isWall`, 1)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may only move to empty tiles.");
+        Control<"Return">();
+    }
+    SetVar<"=">(line:`moveToPos`, '%var(tileX)|%var(tileZ)');
+    CallFunction<"GetNeighbors">(line:`neighbors`, line:`moveToPos`);
+    SetVar<"=">(line:`currentPos`, game:`%var(ID).%var(%default color)Pos`);
+    IfVar<"ListContains | NOT">(line:`neighbors`, line:`currentPos`)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may only move to adjacent tiles.");
+        Control<"Return">();
+    }
+    IfVar<"DictHasKey">(game:`%var(ID).Walls`, '%var(moveToPos):%var(currentPos)')
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may not move through walls!");
+        Control<"Return">();
+    }
+    IfVar<"DictHasKey">(game:`%var(ID).Walls`, '%var(currentPos):%var(moveToPos)')
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may not move through walls!");
+        Control<"Return">();
+    }
+    SetVar<"-=">(game:`%var(ID).Energy`);
+    CallFunction<"MovePiece">(line:`currentPos`, line:`moveToPos`);

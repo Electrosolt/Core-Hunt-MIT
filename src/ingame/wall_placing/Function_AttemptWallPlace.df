@@ -19,7 +19,7 @@ Function<"AttemptWallPlace">()
     {
         IfVar<">=">(game:`%var(ID).Energy`, 2)
         {
-            SetVar<"-=">();
+            SetVar<"-=">(game:`%var(ID).Energy`, 2);
         }
         Else
         {
