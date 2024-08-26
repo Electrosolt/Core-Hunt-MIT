@@ -1,5 +1,6 @@
-PlayerEvent<"RightClick">()
+PlayerEvent<"RightClick | LS-CANCEL">()
     GameAction<"CancelEvent">();
+    CallFunction<"1tProt">();
     IfVar<"= | NOT">(game:`%default mode`, 'Ingame')
     {
         Control<"End">();
@@ -43,18 +44,19 @@ PlayerEvent<"RightClick">()
         }
         IfPlayer<"IsHolding">(game:`Scan5x5Item`)#HandSlot=MainHand
         {
-            CallFunction<"">();
+            CallFunction<"Attempt5x5Scan">();
         }
-        IfPlayer<"IsHolding">(game:`ScanZItem`)
+        IfPlayer<"IsHolding">(game:`ScanZItem`)#HandSlot=MainHand
         {
-            CallFunction<"">();
+            CallFunction<"AttemptZScan">();
         }
-        IfPlayer<"IsHolding">(game:`ScanXItem`)
+        IfPlayer<"IsHolding">(game:`ScanXItem`)#HandSlot=MainHand
         {
-            CallFunction<"">();
+            CallFunction<"AttemptXScan">();
         }
         IfPlayer<"IsHolding">(game:`EndTurnItem`)#HandSlot=MainHand
         {
-            CallFunction<"">();
+            CallFunction<"AttemptEndTurn">();
         }
+        CallFunction<"TurnClick2">();
     }

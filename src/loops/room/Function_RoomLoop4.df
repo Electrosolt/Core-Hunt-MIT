@@ -1,0 +1,31 @@
+Function<"RoomLoop4">()
+    IfVar<"=">(game:`%var(ID).Status`, 'Win')
+    {
+        SetVar<"+=">(game:`%var(ID).LoopTick`);
+        IfVar<"=">(game:`%var(ID).LoopTick`, 1)
+        {
+            SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
+            PlayerAction<"ClearInv">();
+            SelectObject<"Reset">();
+        }
+        IfVar<"=">(game:`%var(ID).LoopTick`, 60)
+        {
+            SetVar<"StyledText">(line:`mainTitle`, game:`%var(%var(ID).Winner)Color`, "%var(%var(ID).Winner) Wins!");
+            SetVar<"StyledText">(line:`subtitle`, game:`%var(%var(ID).Winner)Color`, "%var(%var(ID).%var(%var(ID).Winner)Player) <gray>has won!");
+            SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
+            PlayerAction<"SendTitle">(line:`mainTitle`, line:`subtitle`, 60, 5, 15);
+            PlayerAction<"PlayEntitySound">('%selected', Sound{Firework Launch});
+            SelectObject<"Reset">();
+            SetVar<"CreateList">(line:`fireworkLocs`, '0|0', '0|9', '9|0', '9|9');
+            Repeat<"ForEach">(line:`tile`, line:`fireworkLocs`)
+            {
+                CallFunction<"TileToLocation">(line:`loc`, line:`tile`);
+                SetVar<"ShiftOnAxis">(line:`loc`, 12)#Coordinate=Y;
+                GameAction<"Firework">(line:`loc`, game:`%var(%var(ID).Winner)Firework`)#Instant=True;
+            }
+        }
+        IfVar<"=">(game:`%var(ID).LoopTick`, 140)
+        {
+            CallFunction<"CloseRoom">(local:`ID`);
+        }
+    }

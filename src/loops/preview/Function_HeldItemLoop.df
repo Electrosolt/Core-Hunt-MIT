@@ -43,3 +43,11 @@ Function<"HeldItemLoop">()
             PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, PFX{Falling Dust|material=WHITE_CONCRETE});
         }
     }
+    IfPlayer<"IsHolding">(game:`Scan5x5Item`)#HandSlot=MainHand
+    {
+        CallFunction<"TileToLocation">(line:`loc`, local:`currentTile`);
+        SetVar<"ShiftAllAxes">(line:`c1`, line:`loc`, -9.5, -0.5, -9.5);
+        SetVar<"ShiftAllAxes">(line:`c2`, line:`loc`, 9.5, -0.5, 9.5);
+        PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, 1, PFX{Electric Spark|motionVariation=100|x=1|y=0|z=0})#FillType=Hollow;
+    }
+    CallFunction<"HeldItemLoop2">();

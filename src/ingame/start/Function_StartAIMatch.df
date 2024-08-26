@@ -1,5 +1,5 @@
 Function<"StartAIMatch">()
-    CallFunction<"FindRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`);
+    CallFunction<"FindRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, line:`verticalShift`);
     PlayerAction<"SendMessage">("<dark_gray>» </dark_gray><gray>Found a match in Room %var(roomNumber)");
     IfVar<"=">(line:`roomNumber`, 0)
     {
@@ -7,9 +7,9 @@ Function<"StartAIMatch">()
     }
     IfVar<"=">(%random(0,1), 0)
     {
-        CallFunction<"StartRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, '%default', 'AI');
+        CallFunction<"StartRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, '%default', 'AI', line:`verticalShift`);
     }
     Else
     {
-        CallFunction<"StartRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, 'AI', '%default');
+        CallFunction<"StartRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, 'AI', '%default', line:`verticalShift`);
     }

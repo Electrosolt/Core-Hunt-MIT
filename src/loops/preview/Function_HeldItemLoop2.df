@@ -1,0 +1,44 @@
+Function<"HeldItemLoop2">()
+    IfPlayer<"IsHolding">(game:`ScanZItem`)#HandSlot=MainHand
+    {
+        CallFunction<"GetBlockZ">(line:`z`, line:`zMod`, local:`blockHit`);
+        IfVar<"InRange | NOT">(line:`z`, 0, 9)
+        {
+            Control<"Return">();
+        }
+        IfVar<"!=">(line:`zMod`, 3)
+        {
+            CallFunction<"TileToLocation">(line:`c1`, '0|%var(z)');
+            CallFunction<"TileToLocation">(line:`c2`, '9|%var(z)');
+            SetVar<"ShiftAllAxes">(line:`c1`, -1.5, -0.5, -1.5);
+            SetVar<"ShiftAllAxes">(line:`c2`, 1.5, -0.5, 1.5);
+            PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, 1, PFX{Electric Spark|motionVariation=100|x=1|y=0|z=0})#FillType=Hollow;
+        }
+    }
+    IfPlayer<"IsHolding">(game:`ScanXItem`)#HandSlot=MainHand
+    {
+        CallFunction<"GetBlockX">(line:`x`, line:`xMod`, local:`blockHit`);
+        IfVar<"InRange | NOT">(line:`x`, 0, 9)
+        {
+            Control<"Return">();
+        }
+        IfVar<"!=">(line:`xMod`, 3)
+        {
+            CallFunction<"TileToLocation">(line:`c1`, '%var(x)|0');
+            CallFunction<"TileToLocation">(line:`c2`, '%var(x)|9');
+            SetVar<"ShiftAllAxes">(line:`c1`, -1.5, -0.5, -1.5);
+            SetVar<"ShiftAllAxes">(line:`c2`, 1.5, -0.5, 1.5);
+            PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, 1, PFX{Electric Spark|motionVariation=100|x=1|y=0|z=0})#FillType=Hollow;
+        }
+    }
+    IfVar<"=">(game:`%var(ID).Turn`, game:`%default color`)
+    {
+        IfPlayer<"IsHolding">(game:`MoveCoreItem`)#HandSlot=MainHand
+        {
+            CallFunction<"MoveCoreLoop">();
+        }
+        Else
+        {
+            SetVar<"=">(game:`%var(ID).MovingCore`, 0);
+        }
+    }

@@ -21,10 +21,16 @@ Function<"RoomLoop3">()
             SetVar<"-">(line:`ticksLeft`, 1200, game:`%var(ID).LoopTick`);
             SetVar<"/">(line:`seconds`, line:`ticksLeft`, 20)#DivisionMode=FloorResult;
             SetVar<"+=">(line:`seconds`, 1);
-            SetVar<"StyledText">(line:`bossBarText`, game:`%var(%var(ID).Turn)Color`, "%var(%var(ID).%var(%var(ID).Turn)Player)'s <gray>Turn |<space>", game:`MidColor`, line:`seconds`, "s <gray>left.");
+            SetVar<"ListLength">(line:`redRemaining`, game:`%var(ID).RedCores`);
+            SetVar<"ListLength">(line:`blueRemaining`, game:`%var(ID).BlueCores`);
+            SetVar<"StyledText">(line:`bossBarText`, game:`%var(%var(ID).Turn)Color`, "%var(%var(ID).%var(%var(ID).Turn)Player)'s <gray>Turn | Remaining Cores:<space>", game:`RedColor`, line:`redRemaining`, "<gray>-", game:`BlueColor`, line:`blueRemaining`, "<space><gray>|<space>", game:`MidColor`, line:`seconds`, "s <gray>left.");
+            CallFunction<"CheckWin">();
             SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
             PlayerAction<"SetBossBar">(line:`bossBarText`, line:`ticksLeft`, 1200);
-            PlayerAction<"ActionBar">("<#cc66aa>⏴ <#dd88cc>Energy: <#e0b0d0>%var(%var(ID).Energy)⚡ <#cc66aa>⏵");
+            IfVar<"=">(game:`ActionBarOff`, 0)
+            {
+                PlayerAction<"ActionBar">("<#cc66aa>⏴ <#dd88cc>Energy: <#e0b0d0>%var(%var(ID).Energy)⚡ <#cc66aa>⏵");
+            }
             SelectObject<"Reset">();
         }
         Else
@@ -37,3 +43,4 @@ Function<"RoomLoop3">()
             CallFunction<"EndTurn">();
         }
     }
+    CallFunction<"RoomLoop4">();

@@ -1,0 +1,6 @@
+Function<"GetBlockX">(var: x, var: xMod, loc: block)
+    SetVar<"AlignLoc">(line:`adjustedLoc`, line:`block`)#Rotation=RemoveRotation;
+    SetVar<"-">(line:`adjustedLoc`, line:`adjustedLoc`, game:`%var(ID).Corner`, [-1,0,0]);
+    SetVar<"GetCoord">(line:`targetX`, line:`adjustedLoc`);
+    SetVar<"/">(line:`x`, line:`targetX`, 4)#DivisionMode=FloorResult;
+    SetVar<"%">(line:`xMod`, line:`targetX`, 4)#RemainderMode=Modulo;

@@ -1,0 +1,46 @@
+Function<"AttemptCoreMove">()
+    IfVar<"=">(local:`valid`, 0)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may only move to empty tiles.");
+        Control<"Return">();
+    }
+    IfVar<"=">(local:`isWall`, 1)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may only move to empty tiles.");
+        Control<"Return">();
+    }
+    IfVar<"ListContains">(game:`%var(ID).%var(%default color)Cores`, '%var(tileX)|%var(tileZ)')
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may only move to empty tiles.");
+        Control<"Return">();
+    }
+    IfVar<"<">(game:`%var(ID).Energy`, 3)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>Not enough energy. (Needs <#cc66aa>3⚡</#cc66aa>)");
+        Control<"Return">();
+    }
+    SetVar<"GetListValue">(line:`corePos`, game:`%var(ID).%var(%default color)Cores`, game:`%var(ID).MovingCore`);
+    SetVar<"=">(line:`moveToPos`, '%var(tileX)|%var(tileZ)');
+    CallFunction<"GetCoreMoves">(line:`neighbors`, line:`corePos`, game:`%default color`);
+    IfVar<"DictHasKey">(game:`%var(ID).Walls`, '%var(moveToPos):%var(corePos)')
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may not move through walls!");
+        Control<"Return">();
+    }
+    IfVar<"DictHasKey">(game:`%var(ID).Walls`, '%var(corePos):%var(moveToPos)')
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may not move through walls!");
+        Control<"Return">();
+    }
+    IfVar<"=">(game:`%var(ID).%var(%var(%default color)Opposite)Pos`, line:`moveToPos`)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may not move onto the enemy.");
+        Control<"Return">();
+    }
+    IfVar<"ListContains | NOT">(line:`neighbors`, line:`moveToPos`)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may only move to adjacent tiles.");
+        Control<"Return">();
+    }
+    SetVar<"-=">(game:`%var(ID).Energy`, 3);
+    CallFunction<"MoveCore">(line:`corePos`, line:`moveToPos`);

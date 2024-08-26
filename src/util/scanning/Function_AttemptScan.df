@@ -1,0 +1,30 @@
+Function<"AttemptScan">(list: region)
+    IfVar<">=">(game:`%var(ID).Energy`, 3)
+    {
+        SetVar<"-=">(game:`%var(ID).Energy`, 3);
+    }
+    Else
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>Not enough energy. (Needs <#cc66aa>3⚡</#cc66aa>)");
+        Control<"Return">();
+    }
+    SetVar<"=">(line:`oppCores`, game:`%var(ID).%var(%var(%var(ID).Turn)Opposite)Cores`);
+    SetVar<"=">(line:`total`, 0);
+    Repeat<"ForEach">(line:`tile`, line:`region`)
+    {
+        IfVar<"ListContains">(line:`oppCores`, line:`tile`)
+        {
+            SetVar<"+=">(line:`total`);
+        }
+    }
+    SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
+    IfVar<"=">(line:`total`, 1)
+    {
+        PlayerAction<"SendMessage">("<#cc66aa>» <gray>Found <#cc66aa>%var(total)</#cc66aa> core in the area!");
+    }
+    Else
+    {
+        PlayerAction<"SendMessage">("<#cc66aa>» <gray>Found <#cc66aa>%var(total)</#cc66aa> cores in the area!");
+    }
+    PlayerAction<"PlayEntitySound">(Sound{Beacon Power Select#power3|p=1.498}, Sound{Beacon Power Select#power3|p=2}, '%selected');
+    SelectObject<"Reset">();

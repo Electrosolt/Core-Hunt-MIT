@@ -1,0 +1,6 @@
+Function<"GetBlockZ">(var: z, var: zMod, loc: block)
+    SetVar<"AlignLoc">(line:`adjustedLoc`, line:`block`)#Rotation=RemoveRotation;
+    SetVar<"-">(line:`adjustedLoc`, line:`adjustedLoc`, game:`%var(ID).Corner`, [0,0,-1]);
+    SetVar<"GetCoord">(line:`targetZ`, line:`adjustedLoc`)#Coordinate=Z;
+    SetVar<"/">(line:`z`, line:`targetZ`, 4)#DivisionMode=FloorResult;
+    SetVar<"%">(line:`zMod`, line:`targetZ`, 4)#RemainderMode=Modulo;

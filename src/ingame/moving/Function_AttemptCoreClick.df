@@ -1,0 +1,29 @@
+Function<"AttemptCoreClick">()
+    IfVar<"<">(game:`%var(ID).Energy`, 3)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>Not enough energy. (Needs <#cc66aa>3⚡</#cc66aa>)");
+        Control<"Return">();
+    }
+    IfVar<"ListContains | NOT">(game:`%var(ID).%var(%default color)Cores`, '%var(tileX)|%var(tileZ)')
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You must select a core first.");
+        Control<"Return">();
+    }
+    SetVar<"GetValueIndex">(line:`coreIndex`, game:`%var(ID).%var(%default color)Cores`, '%var(tileX)|%var(tileZ)');
+    IfVar<"=">(line:`coreIndex`, 0)
+    {
+        PlayerAction<"SendMessage">("<red>» Error!</red><gray> Could not find core.");
+        Control<"Return">();
+    }
+    SetVar<"GetListValue">(line:`coreToMove`, game:`%var(ID).%var(%default color)Cores`, line:`coreIndex`);
+    CallFunction<"GetCoreMoves">(line:`moves`, line:`coreToMove`, game:`%default color`);
+    SetVar<"ListLength">(line:`numMoves`, line:`moves`);
+    IfVar<"=">(line:`numMoves`, 0)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>This core doesn't have any valid moves.");
+        Control<"Return">();
+    }
+    SetVar<"=">(game:`%var(ID).MovingCore`, line:`coreIndex`);
+    PlayerAction<"SendMessage">("<#cc66dd>» Moving Core! <gray>Choose a space to move it to.");
+    PlayerAction<"SendMessage">("<#cc66dd>» To cancel, <gray>switch to a different item.");
+    PlayerAction<"PlayEntitySound">('%selected', Sound{Bit|p=2});

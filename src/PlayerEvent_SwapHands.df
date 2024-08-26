@@ -1,2 +1,3 @@
-PlayerEvent<"SwapHands">()
+PlayerEvent<"SwapHands | LS-CANCEL">()
+    GameAction<"CancelEvent">();
     SetVar<"=">(game:`%var(%default room).Energy`, 6);

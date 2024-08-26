@@ -1,17 +1,17 @@
 Function<"AttemptMove">()
-    IfVar<"<">(game:`%var(ID).Energy`, 1)
-    {
-        PlayerAction<"SendMessage">("<red>» Error! </red><gray>Not enough energy. (Needs <#cc66aa>1⚡</#cc66aa>)");
-        Control<"Return">();
-    }
     IfVar<"=">(local:`valid`, 0)
     {
-        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may only move to empty tiles.");
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may only move to normal tiles.");
         Control<"Return">();
     }
     IfVar<"=">(local:`isWall`, 1)
     {
-        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may only move to empty tiles.");
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may only move to normal tiles.");
+        Control<"Return">();
+    }
+    IfVar<"<">(game:`%var(ID).Energy`, 1)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>Not enough energy. (Needs <#cc66aa>1⚡</#cc66aa>)");
         Control<"Return">();
     }
     SetVar<"=">(line:`moveToPos`, '%var(tileX)|%var(tileZ)');

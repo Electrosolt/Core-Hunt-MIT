@@ -1,0 +1,14 @@
+Function<"AttemptZScan">()
+    CallFunction<"GetBlockZ">(line:`z`, line:`zMod`, local:`clickedBlock`);
+    IfVar<"InRange | NOT">(line:`z`, 0, 9)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You must be looking at a valid row.");
+        Control<"Return">();
+    }
+    IfVar<"=">(line:`zMod`, 3)
+    {
+        PlayerAction<"SendMessage">("<red>» Error! </red><gray>You must be looking at a valid row.");
+        Control<"Return">();
+    }
+    CallFunction<"GetZLine">(line:`region`, line:`z`);
+    CallFunction<"AttemptScan">(line:`region`);

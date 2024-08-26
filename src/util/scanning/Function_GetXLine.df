@@ -1,0 +1,2 @@
+Function<"GetXLine">(var: region, num: x)
+    SetVar<"CreateList">(line:`region`, '%var(x)|0', '%var(x)|1', '%var(x)|2', '%var(x)|3', '%var(x)|4', '%var(x)|5', '%var(x)|6', '%var(x)|7', '%var(x)|8', '%var(x)|9');

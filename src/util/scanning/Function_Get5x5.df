@@ -1,0 +1,13 @@
+Function<"Get5x5">(var: region, num: centerX, num: centerZ)
+    SetVar<"CreateList">(line:`region`);
+    SetVar<"SetAllCoords">(line:`c1`, -2, 0, -2);
+    SetVar<"SetAllCoords">(line:`c2`, 2, 0, 2);
+    Repeat<"Grid">(line:`gridLoc`, line:`c1`, line:`c2`)
+    {
+        SetVar<"AlignLoc">(line:`gridLoc`)#Rotation=RemoveRotation#AlignmentMode=LowerBlockCorner;
+        SetVar<"GetCoord">(line:`x`, line:`gridLoc`);
+        SetVar<"GetCoord">(line:`z`, line:`gridLoc`)#Coordinate=Z;
+        SetVar<"+=">(line:`x`, line:`centerX`);
+        SetVar<"+=">(line:`z`, line:`centerZ`);
+        SetVar<"AppendValue">(line:`region`, '%var(x)|%var(z)');
+    }

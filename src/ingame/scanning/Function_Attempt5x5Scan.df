@@ -1,0 +1,4 @@
+Function<"Attempt5x5Scan">()
+    CallFunction<"TileToCoords">(line:`x`, line:`z`, game:`%var(ID).%var(%var(ID).Turn)Pos`);
+    CallFunction<"Get5x5">(line:`region`, line:`x`, line:`z`);
+    CallFunction<"AttemptScan">(line:`region`);

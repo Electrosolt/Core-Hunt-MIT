@@ -1,0 +1,2 @@
+PlayerEvent<"DropItem | LS-CANCEL">()
+    GameAction<"CancelEvent">();

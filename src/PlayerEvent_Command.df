@@ -16,3 +16,7 @@ PlayerEvent<"Command">()
     {
         CallFunction<"StartAIMatch">();
     }
+    IfGame<"CommandEquals">('ab')
+    {
+        SetVar<"-">(game:`ActionBarOff`, 1, game:`ActionBarOff`);
+    }

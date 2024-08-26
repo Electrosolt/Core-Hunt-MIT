@@ -1,0 +1,2 @@
+PlayerEvent<"PlayerTakeDmg | LS-CANCEL">()
+    GameAction<"CancelEvent">();

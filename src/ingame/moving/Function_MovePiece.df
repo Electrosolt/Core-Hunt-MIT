@@ -33,3 +33,4 @@ Function<"MovePiece">(item:blaze_rod, str: currentPos, str: moveToPos)
     }
     PlayerAction<"PlayEntitySound">(Sound{Goat Step}, '%selected');
     SelectObject<"Reset">();
+    CallFunction<"CheckWin">();

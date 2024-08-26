@@ -1,0 +1,16 @@
+Function<"CheckWin">()
+    SetVar<"ListLength">(line:`redRemaining`, game:`%var(ID).RedCores`);
+    SetVar<"ListLength">(line:`blueRemaining`, game:`%var(ID).BlueCores`);
+    IfVar<"=">(line:`redRemaining`, 0)
+    {
+        SetVar<"=">(game:`%var(ID).Winner`, 'Blue');
+    }
+    IfVar<"=">(line:`blueRemaining`, 0)
+    {
+        SetVar<"=">(game:`%var(ID).Winner`, 'Red');
+    }
+    IfVar<"!=">(game:`%var(ID).Winner`, 0)
+    {
+        SetVar<"=">(game:`%var(ID).Status`, 'Win');
+        SetVar<"=">(game:`%var(ID).LoopTick`, 0);
+    }

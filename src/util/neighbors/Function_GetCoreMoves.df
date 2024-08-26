@@ -1,0 +1,13 @@
+Function<"GetCoreMoves">(var: moves, str: core, str: color)
+    CallFunction<"GetNeighborsWall">(line:`neighbors`, line:`core`);
+    SetVar<"CreateList">(line:`moves`);
+    Repeat<"ForEach">(line:`move`, line:`neighbors`)
+    {
+        IfVar<"ListContains | NOT">(game:`%var(ID).%var(color)Cores`, line:`move`)
+        {
+            IfVar<"!=">(line:`move`, game:`%var(ID).%var(%var(color)Opposite)Pos`)
+            {
+                SetVar<"AppendValue">(line:`moves`, line:`move`);
+            }
+        }
+    }

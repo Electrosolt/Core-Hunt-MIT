@@ -1,0 +1,44 @@
+Function<"MoveCoreLoop">()
+    SetVar<"=">(line:`allPlayerCores`, game:`%var(ID).%var(%default color)Cores`);
+    IfVar<"!=">(game:`%var(ID).MovingCore`, 0)
+    {
+        SetVar<"GetListValue">(line:`movingCoreTile`, line:`allPlayerCores`, game:`%var(ID).MovingCore`);
+        CallFunction<"GetCoreMoves">(line:`neighbors`, line:`movingCoreTile`, game:`%default color`);
+        Repeat<"ForEach">(line:`neighbor`, line:`neighbors`)
+        {
+            CallFunction<"TileToLocation">(line:`loc`, line:`neighbor`);
+            SetVar<"ShiftAllAxes">(line:`c1`, line:`loc`, -1.5, -0.5, -1.5);
+            SetVar<"ShiftAllAxes">(line:`c2`, line:`loc`, 1.5, -0.5, 1.5);
+            IfGame<"BlockEquals">(local:`blockHit`, item:gray_concrete_powder)
+            {
+                CallFunction<"GetClickedThing">(line:`valid`, line:`isWall`, line:`x`, line:`z`, line:`ignore`, local:`blockHit`);
+                IfVar<"=">(line:`valid`, 1)
+                {
+                    IfVar<"=">(line:`isWall`, 0)
+                    {
+                        IfVar<"=">('%var(x)|%var(z)', line:`neighbor`)
+                        {
+                            PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, PFX{Composter});
+                            Control<"Skip">();
+                        }
+                    }
+                }
+            }
+            PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, PFX{Electric Spark|motionVariation=100|x=1|y=0|z=0});
+        }
+    }
+    Else
+    {
+        Repeat<"ForEach">(line:`core`, line:`allPlayerCores`)
+        {
+            CallFunction<"GetCoreMoves">(line:`moves`, line:`core`, game:`%default color`);
+            SetVar<"ListLength">(line:`moveCount`, line:`moves`);
+            IfVar<">">(line:`moveCount`, 0)
+            {
+                CallFunction<"TileToLocation">(line:`loc`, line:`core`);
+                SetVar<"ShiftAllAxes">(line:`c1`, line:`loc`, -1.5, -0.5, -1.5);
+                SetVar<"ShiftAllAxes">(line:`c2`, line:`loc`, 1.5, -0.5, 1.5);
+                PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, PFX{Electric Spark|motionVariation=100|x=1|y=0|z=0});
+            }
+        }
+    }

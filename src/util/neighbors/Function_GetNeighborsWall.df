@@ -1,0 +1,13 @@
+Function<"GetNeighborsWall">(var: neighbors, str: tile)
+    CallFunction<"GetNeighbors">(line:`allNeighbors`, line:`tile`);
+    SetVar<"CreateList">(line:`neighbors`);
+    Repeat<"ForEach">(line:`neighbor`, line:`allNeighbors`)
+    {
+        IfVar<"DictHasKey | NOT">(game:`%var(ID).Walls`, '%var(neighbor):%var(tile)')
+        {
+            IfVar<"DictHasKey | NOT">(game:`%var(ID).Walls`, '%var(tile):%var(neighbor)')
+            {
+                SetVar<"AppendValue">(line:`neighbors`, line:`neighbor`);
+            }
+        }
+    }

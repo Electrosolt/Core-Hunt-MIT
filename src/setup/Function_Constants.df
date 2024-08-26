@@ -18,9 +18,12 @@ Function<"Constants">()
     SetVar<"=">(game:`BluePieceBlock`, item:blue_glazed_terracotta);
     SetVar<"=">(game:`MoveItem`, item:blaze_rod);
     SetVar<"=">(game:`WallItem`, item:polished_deepslate_wall);
+    SetVar<"=">(game:`MoveCoreItem`, item:echo_shard);
     SetVar<"=">(game:`Scan5x5Item`, item:shulker_shell);
     SetVar<"=">(game:`ScanZItem`, item:gold_ingot);
     SetVar<"=">(game:`ScanXItem`, item:iron_ingot);
     SetVar<"=">(game:`EndTurnItem`, item:redstone);
     SetVar<"=">(game:`RedExplosionParticle`, PFX{100.0xItem|material=RED_GLAZED_TERRACOTTA|motionVariation=40|x=0|y=10|z=0});
     SetVar<"=">(game:`BlueExplosionParticle`, PFX{100.0xItem|material=BLUE_GLAZED_TERRACOTTA|motionVariation=40|x=0|y=10|z=0});
+    SetVar<"=">(game:`RedFirework`, item:firework_rocket);
+    SetVar<"=">(game:`BlueFirework`, item:firework_rocket);

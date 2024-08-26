@@ -1,4 +1,4 @@
-Function<"FindRoom">(var: emptyIndex, var: cornerLoc, var: redSpawn, var: blueSpawn)
+Function<"FindRoom">(var: emptyIndex, var: cornerLoc, var: redSpawn, var: blueSpawn, var: verticalShift)
     SetVar<"GetValueIndex">(line:`emptyIndex`, game:`rooms`, 'empty');
     IfVar<"=">(line:`emptyIndex`, 0)
     {

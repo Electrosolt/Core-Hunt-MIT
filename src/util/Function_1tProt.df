@@ -1,0 +1,6 @@
+Function<"1tProt">()
+    IfPlayer<"NoItemCooldown | NOT">(item:dead_tube_coral)
+    {
+        Control<"End">();
+    }
+    PlayerAction<"SetItemCooldown">(item:dead_tube_coral, 1);

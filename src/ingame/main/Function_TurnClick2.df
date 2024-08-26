@@ -1,0 +1,12 @@
+Function<"TurnClick2">()
+    IfPlayer<"IsHolding">(game:`MoveCoreItem`)#HandSlot=MainHand
+    {
+        IfVar<"=">(game:`%var(ID).MovingCore`, 0)
+        {
+            CallFunction<"AttemptCoreClick">();
+        }
+        Else
+        {
+            CallFunction<"AttemptCoreMove">();
+        }
+    }
