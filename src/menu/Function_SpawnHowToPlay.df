@@ -1,0 +1,18 @@
+Function<"SpawnHowToPlay">()
+    SetVar<"=">(line:`lineLoc`, [76,5.65,34.5,0,-90]);
+    SetVar<"CreateList">(line:`lines`, "<gradient:red:blue>⏴ ʜᴏᴡ ᴛᴏ ᴘʟᴀʏ ⏵", "<#cc66aa>⏵ <gray>Hide 3 cores on the map. Find your opponent's cores before they find yours. </gray>⏴", "<#cc66aa>⏵ <gray>Move your character. Explode enemy cores you land on. </gray>⏴", "<#cc66aa>⏵ <gray>Place walls. Obstruct enemy movement. </gray>⏴", "<#cc66aa>⏵ <gray>Scan regions. Learn how many cores are in them—but not where. </gray>⏴", "<#cc66aa>⏵ <gray>Move your hidden cores. Throw off your opponent. </gray>⏴", "<#cc66aa>⏵ <gray>Get 1⚡ to 6⚡ each turn. It doesn't carry-over. </gray>⏴", "<#cc66aa>⏵ <gray>Hover over items in your inventory to learn more. </gray>⏴", "<#cc66aa>⏵ <gray>Press <dark_gray>[<#e0b0d0><key:key.hotbar.4></#e0b0d0>]</dark_gray> to return to menu. </gray>⏴");
+    Repeat<"ForEach">(line:`text`, line:`lines`)
+    {
+        GameAction<"SpawnTextDisplay">(line:`lineLoc`, line:`text`);
+        EntityAction<"SetCustomTag">('%default spawn_menu', 1)@LastEntity;
+        EntityAction<"SetCustomTag">('hide_on_join', 1)@LastEntity;
+        EntityAction<"DisplayScale">(0.5, 0.5, 0.5)@LastEntity;
+        EntityAction<"TDisplayLineWidth">(450);
+        EntityAction<"DisplayBillboard">();
+        EntityAction<"DispRotAxisAngle">(〈0,1,0〉, 90);
+        SetVar<"ShiftOnAxis">(line:`lineLoc`, -0.25)#Coordinate=Y;
+        SetVar<"=">(line:`uuid`, GV(UUID)@LastEntity);
+        SelectObject<"PlayerName | NOT">('%default');
+        PlayerAction<"SetEntityHidden">(line:`uuid`);
+        SelectObject<"Reset">();
+    }

@@ -1,5 +1,6 @@
 PlayerEvent<"Join">()
     PlayerAction<"AdventureMode">();
+    SetVar<"=">(game:`%default validPassword`, 0);
     IfVar<"=">(GV(Player Count), 1)
     {
         CallFunction<"Constants">();
@@ -139,7 +140,7 @@ PlayerEvent<"Leave">()
 --------------------------
 
 PlayerEvent<"ChangeSlot">()
-    IfVar<"=">(game:`%default mode`, 'Verification')
+    IfVar<"=">(game:`%default mode`, 'Verification', 'Spawn')
     {
         IfVar<"!=">(GV(Event Hotbar Slot), 9)
         {
@@ -148,7 +149,6 @@ PlayerEvent<"ChangeSlot">()
     }
     IfVar<"=">(game:`%default mode`, 'Spawn')
     {
-        GameAction<"CancelEvent">();
         IfVar<"=">(GV(Event Hotbar Slot), 1)
         {
             SetVar<"RemoveListValue">(game:`MultiplayerQueue`, '%default');
@@ -170,8 +170,21 @@ PlayerEvent<"ChangeSlot">()
         }
         IfVar<"=">(GV(Event Hotbar Slot), 3)
         {
-            PlayerAction<"SendMessageSeq">("<dark_gray><st><space:16></st>[ <gradient:red:blue>Core Hunt Credits</gradient> ]<st><space:16>", "", "<red>⏴ <gray>Concept, Code, and Art <blue>⏵", "<#cc88dd>Electrosolt", "", "<red>⏴ <gray>Playtesting <blue>⏵", "<#cc88dd>DeepSeaBlue<space:3>RebixCube<space:3>techGeneral", "", "<red>⏴ <gray>Platform <blue>⏵", "<#cc88dd>MC DiamondFire", "", "<dark_gray><st><space:16></st>[ <gradient:red:blue>Core Hunt Credits</gradient> ]<st><space:16>", 0)#AlignmentMode=Centered;
+            PlayerAction<"SendMessageSeq">("<dark_gray><st><space:16></st>[ <gradient:red:blue>Core Hunt Credits</gradient> ]<st><space:16>", "", "<red>⏴ <gray>Concept, Code, and Art <blue>⏵", "<#cc88dd>Electrosolt", "", "<red>⏴ <gray>Playtesting <blue>⏵", "<#cc88dd>DeepSeaBlue<space:3>RebixCube<space:3>techGeneral<space:3>pomchom", "", "<red>⏴ <gray>Platform <blue>⏵", "<#cc88dd>MC DiamondFire", "", "<dark_gray><st><space:16></st>[ <gradient:red:blue>Core Hunt Credits</gradient> ]<st><space:16>", 0)#AlignmentMode=Centered;
             PlayerAction<"PlaySound">(Sound{Challenge Complete|p=2|vol=0.7});
+        }
+        IfVar<"=">(GV(Event Hotbar Slot), 4)
+        {
+            PlayerAction<"WakeUpAnimation">();
+            PlayerAction<"PlaySound">(Sound{Witch Throw|p=2});
+            IfVar<"<">(GV(Yaw), 0)
+            {
+                PlayerAction<"SetRotation">(0, 90);
+            }
+            Else
+            {
+                PlayerAction<"SetRotation">(0, -90);
+            }
         }
     }
 
@@ -184,6 +197,7 @@ PlayerEvent<"SwapHands | LS-CANCEL">()
 
 Function<"GoToSpawn">()
     PlayerAction<"Teleport">([77.5,3,34.5,0,-90]);
+    PlayerAction<"SetSlot">(9);
     IfVar<"=">(game:`%default validPassword`, 0)
     {
         SetVar<"=">(game:`%default mode`, 'Verification');
@@ -544,15 +558,15 @@ Function<"RoomLoop2">()
     IfVar<"=">(game:`%var(ID).Status`, 'PlacingWalls')
     {
         SetVar<"+=">(game:`%var(ID).LoopTick`);
-        IfVar<"<">(game:`%var(ID).LoopTick`, 300)
+        IfVar<"<">(game:`%var(ID).LoopTick`, 400)
         {
             CallFunction<"InitWallTick">(game:`%var(ID).Turn`);
-            SetVar<"-">(line:`ticksLeft`, 300, game:`%var(ID).LoopTick`);
+            SetVar<"-">(line:`ticksLeft`, 400, game:`%var(ID).LoopTick`);
             SetVar<"/">(line:`seconds`, line:`ticksLeft`, 20)#DivisionMode=FloorResult;
             SetVar<"+=">(line:`seconds`);
             SetVar<"StyledText">(line:`actionBar`, game:`%var(%var(ID).Turn)Color`, "%var(%var(ID).%var(%var(ID).Turn)Player) <gray>is Placing");
             SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
-            PlayerAction<"SetBossBar">("<#bb4499>Placing Walls <dark_gray>|</dark_gray> <#cc66aa>%var(seconds)s</#cc66aa> left | <#cc66aa>%var(%var(ID).InitialWallsPlaced)</#cc66aa>/<#cc66aa>%var(%var(ID).InitialWallMax)</#cc66aa> Walls Placed", line:`ticksLeft`, 300);
+            PlayerAction<"SetBossBar">("<#bb4499>Placing Walls <dark_gray>|</dark_gray> <#cc66aa>%var(seconds)s</#cc66aa> left | <#cc66aa>%var(%var(ID).InitialWallsPlaced)</#cc66aa>/<#cc66aa>%var(%var(ID).InitialWallMax)</#cc66aa> Walls Placed", line:`ticksLeft`, 400);
             PlayerAction<"ActionBar">(line:`actionBar`);
             SelectObject<"Reset">();
         }
@@ -690,44 +704,6 @@ Function<"GetNeighbors">(item:player_head, var: neighbors, str: tile)
 
 --------------------------
 
-Function<"MakeSpawnMenu">(str: playerName)
-    SelectObject<"EntitiesCond | HasCustomTag">('%default spawn_menu');
-    EntityAction<"Remove">();
-    SelectObject<"Reset">();
-    Repeat<"Forever">()
-    {
-        IfGame<"IsChunkLoaded">([93.5,51.5,6.5])
-        {
-            Control<"StopRepeat">();
-        }
-        Control<"Wait">(2);
-    }
-    SetVar<"=">(line:`lineLoc`, [80.5,6,34.5]);
-    SetVar<"CreateList">(line:`lines`, "<gradient:red:blue>⏴ ᴄᴏʀᴇ ʜᴜɴᴛ ⏵", "<dark_gray>[<#e0b0d0><key:key.hotbar.1></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>Play vs. AI </gray>⏴", "<dark_gray>[<#e0b0d0><key:key.hotbar.2></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>Play Multiplayer </gray>⏴", "<dark_gray>[<#e0b0d0><key:key.hotbar.3></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>View Credits </gray>⏴", "", "<#cc66aa>⏵ <gray>Press number keys to pick </gray>⏴");
-    SetVar<"=">(line:`i`, 0);
-    Repeat<"ForEach">(line:`text`, line:`lines`)
-    {
-        SetVar<"+=">(line:`i`);
-        GameAction<"SpawnTextDisplay">(line:`lineLoc`, line:`text`);
-        EntityAction<"SetCustomTag">('%default spawn_menu', 1)@LastEntity;
-        EntityAction<"SetCustomTag">('hide_on_join', 1)@LastEntity;
-        IfVar<"=">(line:`i`, 1)
-        {
-            EntityAction<"DisplayScale">(3, 3, 3);
-        }
-        Else
-        {
-            EntityAction<"DisplayScale">(1.5, 1.5, 1.5);
-        }
-        SetVar<"ShiftOnAxis">(line:`lineLoc`, -0.6)#Coordinate=Y;
-        SetVar<"=">(line:`uuid`, GV(UUID)@LastEntity);
-        SelectObject<"PlayerName | NOT">('%default');
-        PlayerAction<"SetEntityHidden">(line:`uuid`);
-        SelectObject<"Reset">();
-    }
-
---------------------------
-
 Function<"AttemptWallPlace">(item:polished_deepslate_wall)
     IfVar<"=">(0, local:`isWall`, local:`valid`)
     {
@@ -801,7 +777,7 @@ Function<"CloseRoom">(item:dark_oak_door, str: roomID)
     SelectObject<"PlayerName">(game:`%var(roomID).RedPlayer`, game:`%var(roomID).BluePlayer`);
     PlayerAction<"PlayEntitySound">('%selected', Sound{Loom Take Result|p=1.5});
     SelectObject<"Reset">();
-    SetVar<"TrimList">(line:`roomIndex`, line:`roomID`, 5, 5);
+    SetVar<"TrimString">(line:`roomIndex`, line:`roomID`, 5, 5);
     SetVar<"ParseNumber">(line:`roomIndex`, line:`roomIndex`);
     SetVar<"SetListValue">(game:`rooms`, line:`roomIndex`, 'empty');
     SelectObject<"PlayerName">(game:`%var(roomID).RedPlayer`, game:`%var(roomID).BluePlayer`);
@@ -2018,35 +1994,6 @@ Function<"AI.Turn2">()
 
 --------------------------
 
-Function<"StartMPMatch">()
-    SetVar<"ListLength">(line:`peopleInQueue`, game:`MultiplayerQueue`);
-    IfVar<"<">(line:`peopleInQueue`, 2)
-    {
-        Control<"Return">();
-    }
-    CallFunction<"FindRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, line:`verticalShift`);
-    IfVar<"=">(line:`roomNumber`, 0)
-    {
-        Control<"Return">();
-    }
-    SetVar<"PopListValue">(line:`player1`, game:`MultiplayerQueue`, 1);
-    SetVar<"PopListValue">(line:`player2`, game:`MultiplayerQueue`, 1);
-    IfVar<"=">(%random(0,1), 0)
-    {
-        CallFunction<"StartRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, line:`player1`, line:`player2`, line:`verticalShift`);
-        SetVar<"StyledText">(line:`msg`, "<#cc88dd>» Found a match!<space>", game:`RedColor`, line:`player1`, "<space><gray>vs.<space>", game:`BlueColor`, line:`player2`, "<space><gray>in Room %var(roomNumber).");
-    }
-    Else
-    {
-        CallFunction<"StartRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, line:`player2`, line:`player1`, line:`verticalShift`);
-        SetVar<"StyledText">(line:`msg`, "<#cc88dd>» Found a match!<space>", game:`RedColor`, line:`player2`, "<space><gray>vs.<space>", game:`BlueColor`, line:`player1`, "<space><gray>in Room %var(roomNumber).");
-    }
-    SelectObject<"PlayerName">(line:`player1`, line:`player2`);
-    PlayerAction<"SendMessage">(line:`msg`);
-    SelectObject<"Reset">();
-
---------------------------
-
 Function<"IsInBounds">(var: result, num: x, num: z)
     SetVar<"=">(line:`result`, 0);
     IfVar<"InRange | NOT">(line:`x`, 0, 9)
@@ -2107,6 +2054,95 @@ Function<"ClearGrid">()
 
 --------------------------
 
+Function<"MakeSpawnMenu">(str: playerName)
+    SelectObject<"EntitiesCond | HasCustomTag">('%default spawn_menu');
+    EntityAction<"Remove">();
+    SelectObject<"Reset">();
+    Repeat<"Forever">()
+    {
+        IfGame<"IsChunkLoaded">(GV(Location))
+        {
+            Control<"StopRepeat">();
+        }
+        Control<"Wait">(2);
+    }
+    SetVar<"=">(line:`lineLoc`, [80.5,6,34.5]);
+    SetVar<"CreateList">(line:`lines`, "<gradient:red:blue>⏴ ᴄᴏʀᴇ ʜᴜɴᴛ ⏵", "<dark_gray>[<#e0b0d0><key:key.hotbar.1></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>Play vs. AI </gray>⏴", "<dark_gray>[<#e0b0d0><key:key.hotbar.2></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>Play Multiplayer </gray>⏴", "<dark_gray>[<#e0b0d0><key:key.hotbar.3></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>View Credits </gray>⏴", "<dark_gray>[<#e0b0d0><key:key.hotbar.4></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>How to Play </gray>⏴", "<#cc66aa>⏵ <gray>Press number keys to pick </gray>⏴");
+    SetVar<"=">(line:`i`, 0);
+    Repeat<"ForEach">(line:`text`, line:`lines`)
+    {
+        SetVar<"+=">(line:`i`);
+        GameAction<"SpawnTextDisplay">(line:`lineLoc`, line:`text`);
+        EntityAction<"SetCustomTag">('%default spawn_menu', 1)@LastEntity;
+        EntityAction<"SetCustomTag">('hide_on_join', 1)@LastEntity;
+        IfVar<"=">(line:`i`, 1)
+        {
+            EntityAction<"DisplayScale">(3, 3, 3);
+        }
+        Else
+        {
+            EntityAction<"DisplayScale">(1.5, 1.5, 1.5);
+        }
+        SetVar<"ShiftOnAxis">(line:`lineLoc`, -0.6)#Coordinate=Y;
+        SetVar<"=">(line:`uuid`, GV(UUID)@LastEntity);
+        SelectObject<"PlayerName | NOT">('%default');
+        PlayerAction<"SetEntityHidden">(line:`uuid`);
+        SelectObject<"Reset">();
+    }
+    CallFunction<"SpawnHowToPlay">();
+
+--------------------------
+
+Function<"StartMPMatch">()
+    SetVar<"ListLength">(line:`peopleInQueue`, game:`MultiplayerQueue`);
+    IfVar<"<">(line:`peopleInQueue`, 2)
+    {
+        Control<"Return">();
+    }
+    CallFunction<"FindRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, line:`verticalShift`);
+    IfVar<"=">(line:`roomNumber`, 0)
+    {
+        Control<"Return">();
+    }
+    SetVar<"PopListValue">(line:`player1`, game:`MultiplayerQueue`, 1);
+    SetVar<"PopListValue">(line:`player2`, game:`MultiplayerQueue`, 1);
+    IfVar<"=">(%random(0,1), 0)
+    {
+        CallFunction<"StartRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, line:`player1`, line:`player2`, line:`verticalShift`);
+        SetVar<"StyledText">(line:`msg`, "<#cc88dd>» Found a match!<space>", game:`RedColor`, line:`player1`, "<space><gray>vs.<space>", game:`BlueColor`, line:`player2`, "<space><gray>in Room %var(roomNumber).");
+    }
+    Else
+    {
+        CallFunction<"StartRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, line:`player2`, line:`player1`, line:`verticalShift`);
+        SetVar<"StyledText">(line:`msg`, "<#cc88dd>» Found a match!<space>", game:`RedColor`, line:`player2`, "<space><gray>vs.<space>", game:`BlueColor`, line:`player1`, "<space><gray>in Room %var(roomNumber).");
+    }
+    SelectObject<"PlayerName">(line:`player1`, line:`player2`);
+    PlayerAction<"SendMessage">(line:`msg`);
+    SelectObject<"Reset">();
+
+--------------------------
+
+Function<"SpawnHowToPlay">()
+    SetVar<"=">(line:`lineLoc`, [76,5.65,34.5,0,-90]);
+    SetVar<"CreateList">(line:`lines`, "<gradient:red:blue>⏴ ʜᴏᴡ ᴛᴏ ᴘʟᴀʏ ⏵", "<#cc66aa>⏵ <gray>Hide 3 cores on the map. Find your opponent's cores before they find yours. </gray>⏴", "<#cc66aa>⏵ <gray>Move your character. Explode enemy cores you land on. </gray>⏴", "<#cc66aa>⏵ <gray>Place walls. Obstruct enemy movement. </gray>⏴", "<#cc66aa>⏵ <gray>Scan regions. Learn how many cores are in them—but not where. </gray>⏴", "<#cc66aa>⏵ <gray>Move your hidden cores. Throw off your opponent. </gray>⏴", "<#cc66aa>⏵ <gray>Get 1⚡ to 6⚡ each turn. It doesn't carry-over. </gray>⏴", "<#cc66aa>⏵ <gray>Hover over items in your inventory to learn more. </gray>⏴", "<#cc66aa>⏵ <gray>Press <dark_gray>[<#e0b0d0><key:key.hotbar.4></#e0b0d0>]</dark_gray> to return to menu. </gray>⏴");
+    Repeat<"ForEach">(line:`text`, line:`lines`)
+    {
+        GameAction<"SpawnTextDisplay">(line:`lineLoc`, line:`text`);
+        EntityAction<"SetCustomTag">('%default spawn_menu', 1)@LastEntity;
+        EntityAction<"SetCustomTag">('hide_on_join', 1)@LastEntity;
+        EntityAction<"DisplayScale">(0.5, 0.5, 0.5)@LastEntity;
+        EntityAction<"TDisplayLineWidth">(450);
+        EntityAction<"DisplayBillboard">();
+        EntityAction<"DispRotAxisAngle">(〈0,1,0〉, 90);
+        SetVar<"ShiftOnAxis">(line:`lineLoc`, -0.25)#Coordinate=Y;
+        SetVar<"=">(line:`uuid`, GV(UUID)@LastEntity);
+        SelectObject<"PlayerName | NOT">('%default');
+        PlayerAction<"SetEntityHidden">(line:`uuid`);
+        SelectObject<"Reset">();
+    }
+
+--------------------------
+
 Process<"PlayerLoopH">()
     Repeat<"Forever">()
     {
@@ -2144,11 +2180,6 @@ Process<"GameLoop">()
 
 --------------------------
 
-Process<"GoToSpawnUtil">()
-    CallFunction<"GoToSpawn">();
-
---------------------------
-
 Process<"PlayerLoop">()
     IfVar<"=">(game:`%default mode`, 'Spawn', 'Verification')
     {
@@ -2156,7 +2187,6 @@ Process<"PlayerLoop">()
         PlayerAction<"GivePotion">(Pot{Jump Boost -100 for ∞}, Pot{Invisibility 1 for ∞})#ShowIcon=False#EffectParticles=None;
         PlayerAction<"SetSpeed">(0);
         PlayerAction<"SetAllowFlight">()#AllowFlight=Disable;
-        PlayerAction<"SetSlot">(9);
         CallFunction<"StopSpawnSlip">();
     }
     IfVar<"=">(game:`%default mode`, 'Ingame')
@@ -2211,6 +2241,11 @@ Process<"ScanAnim">()
             Control<"Wait">(2);
         }
     }
+
+--------------------------
+
+Process<"GoToSpawnUtil">()
+    CallFunction<"GoToSpawn">();
 
 --------------------------
 

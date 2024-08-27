@@ -2,7 +2,7 @@ Function<"CloseRoom">(item:dark_oak_door, str: roomID)
     SelectObject<"PlayerName">(game:`%var(roomID).RedPlayer`, game:`%var(roomID).BluePlayer`);
     PlayerAction<"PlayEntitySound">('%selected', Sound{Loom Take Result|p=1.5});
     SelectObject<"Reset">();
-    SetVar<"TrimList">(line:`roomIndex`, line:`roomID`, 5, 5);
+    SetVar<"TrimString">(line:`roomIndex`, line:`roomID`, 5, 5);
     SetVar<"ParseNumber">(line:`roomIndex`, line:`roomIndex`);
     SetVar<"SetListValue">(game:`rooms`, line:`roomIndex`, 'empty');
     SelectObject<"PlayerName">(game:`%var(roomID).RedPlayer`, game:`%var(roomID).BluePlayer`);

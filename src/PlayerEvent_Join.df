@@ -1,5 +1,6 @@
 PlayerEvent<"Join">()
     PlayerAction<"AdventureMode">();
+    SetVar<"=">(game:`%default validPassword`, 0);
     IfVar<"=">(GV(Player Count), 1)
     {
         CallFunction<"Constants">();

@@ -4,14 +4,14 @@ Function<"MakeSpawnMenu">(str: playerName)
     SelectObject<"Reset">();
     Repeat<"Forever">()
     {
-        IfGame<"IsChunkLoaded">([93.5,51.5,6.5])
+        IfGame<"IsChunkLoaded">(GV(Location))
         {
             Control<"StopRepeat">();
         }
         Control<"Wait">(2);
     }
     SetVar<"=">(line:`lineLoc`, [80.5,6,34.5]);
-    SetVar<"CreateList">(line:`lines`, "<gradient:red:blue>⏴ ᴄᴏʀᴇ ʜᴜɴᴛ ⏵", "<dark_gray>[<#e0b0d0><key:key.hotbar.1></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>Play vs. AI </gray>⏴", "<dark_gray>[<#e0b0d0><key:key.hotbar.2></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>Play Multiplayer </gray>⏴", "<dark_gray>[<#e0b0d0><key:key.hotbar.3></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>View Credits </gray>⏴", "", "<#cc66aa>⏵ <gray>Press number keys to pick </gray>⏴");
+    SetVar<"CreateList">(line:`lines`, "<gradient:red:blue>⏴ ᴄᴏʀᴇ ʜᴜɴᴛ ⏵", "<dark_gray>[<#e0b0d0><key:key.hotbar.1></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>Play vs. AI </gray>⏴", "<dark_gray>[<#e0b0d0><key:key.hotbar.2></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>Play Multiplayer </gray>⏴", "<dark_gray>[<#e0b0d0><key:key.hotbar.3></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>View Credits </gray>⏴", "<dark_gray>[<#e0b0d0><key:key.hotbar.4></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>How to Play </gray>⏴", "<#cc66aa>⏵ <gray>Press number keys to pick </gray>⏴");
     SetVar<"=">(line:`i`, 0);
     Repeat<"ForEach">(line:`text`, line:`lines`)
     {
@@ -33,3 +33,4 @@ Function<"MakeSpawnMenu">(str: playerName)
         PlayerAction<"SetEntityHidden">(line:`uuid`);
         SelectObject<"Reset">();
     }
+    CallFunction<"SpawnHowToPlay">();

@@ -1,5 +1,5 @@
 PlayerEvent<"ChangeSlot">()
-    IfVar<"=">(game:`%default mode`, 'Verification')
+    IfVar<"=">(game:`%default mode`, 'Verification', 'Spawn')
     {
         IfVar<"!=">(GV(Event Hotbar Slot), 9)
         {
@@ -8,7 +8,6 @@ PlayerEvent<"ChangeSlot">()
     }
     IfVar<"=">(game:`%default mode`, 'Spawn')
     {
-        GameAction<"CancelEvent">();
         IfVar<"=">(GV(Event Hotbar Slot), 1)
         {
             SetVar<"RemoveListValue">(game:`MultiplayerQueue`, '%default');
@@ -30,7 +29,20 @@ PlayerEvent<"ChangeSlot">()
         }
         IfVar<"=">(GV(Event Hotbar Slot), 3)
         {
-            PlayerAction<"SendMessageSeq">("<dark_gray><st><space:16></st>[ <gradient:red:blue>Core Hunt Credits</gradient> ]<st><space:16>", "", "<red>⏴ <gray>Concept, Code, and Art <blue>⏵", "<#cc88dd>Electrosolt", "", "<red>⏴ <gray>Playtesting <blue>⏵", "<#cc88dd>DeepSeaBlue<space:3>RebixCube<space:3>techGeneral", "", "<red>⏴ <gray>Platform <blue>⏵", "<#cc88dd>MC DiamondFire", "", "<dark_gray><st><space:16></st>[ <gradient:red:blue>Core Hunt Credits</gradient> ]<st><space:16>", 0)#AlignmentMode=Centered;
+            PlayerAction<"SendMessageSeq">("<dark_gray><st><space:16></st>[ <gradient:red:blue>Core Hunt Credits</gradient> ]<st><space:16>", "", "<red>⏴ <gray>Concept, Code, and Art <blue>⏵", "<#cc88dd>Electrosolt", "", "<red>⏴ <gray>Playtesting <blue>⏵", "<#cc88dd>DeepSeaBlue<space:3>RebixCube<space:3>techGeneral<space:3>pomchom", "", "<red>⏴ <gray>Platform <blue>⏵", "<#cc88dd>MC DiamondFire", "", "<dark_gray><st><space:16></st>[ <gradient:red:blue>Core Hunt Credits</gradient> ]<st><space:16>", 0)#AlignmentMode=Centered;
             PlayerAction<"PlaySound">(Sound{Challenge Complete|p=2|vol=0.7});
+        }
+        IfVar<"=">(GV(Event Hotbar Slot), 4)
+        {
+            PlayerAction<"WakeUpAnimation">();
+            PlayerAction<"PlaySound">(Sound{Witch Throw|p=2});
+            IfVar<"<">(GV(Yaw), 0)
+            {
+                PlayerAction<"SetRotation">(0, 90);
+            }
+            Else
+            {
+                PlayerAction<"SetRotation">(0, -90);
+            }
         }
     }
