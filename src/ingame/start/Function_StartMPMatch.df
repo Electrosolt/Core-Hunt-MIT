@@ -1,0 +1,26 @@
+Function<"StartMPMatch">()
+    SetVar<"ListLength">(line:`peopleInQueue`, game:`MultiplayerQueue`);
+    IfVar<"<">(line:`peopleInQueue`, 2)
+    {
+        Control<"Return">();
+    }
+    CallFunction<"FindRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, line:`verticalShift`);
+    IfVar<"=">(line:`roomNumber`, 0)
+    {
+        Control<"Return">();
+    }
+    SetVar<"PopListValue">(line:`player1`, game:`MultiplayerQueue`, 1);
+    SetVar<"PopListValue">(line:`player2`, game:`MultiplayerQueue`, 1);
+    IfVar<"=">(%random(0,1), 0)
+    {
+        CallFunction<"StartRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, line:`player1`, line:`player2`, line:`verticalShift`);
+        SetVar<"StyledText">(line:`msg`, "<#cc88dd>» Found a match!<space>", game:`RedColor`, line:`player1`, "<space><gray>vs.<space>", game:`BlueColor`, line:`player2`, "<space><gray>in Room %var(roomNumber).");
+    }
+    Else
+    {
+        CallFunction<"StartRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, line:`player2`, line:`player1`, line:`verticalShift`);
+        SetVar<"StyledText">(line:`msg`, "<#cc88dd>» Found a match!<space>", game:`RedColor`, line:`player2`, "<space><gray>vs.<space>", game:`BlueColor`, line:`player1`, "<space><gray>in Room %var(roomNumber).");
+    }
+    SelectObject<"PlayerName">(line:`player1`, line:`player2`);
+    PlayerAction<"SendMessage">(line:`msg`);
+    SelectObject<"Reset">();

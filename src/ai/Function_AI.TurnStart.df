@@ -1,0 +1,8 @@
+Function<"AI.TurnStart">()
+    IfVar<"=">(game:`%var(ID).AI_Enabled`, 0)
+    {
+        Control<"Return">();
+    }
+    SetVar<"=">(game:`%var(ID).AI_TryEndTurn`, 0);
+    SetVar<"-=">(game:`%var(ID).AI_5x5Cooldown`);
+    SetVar<"=">(game:`%var(ID).AI_Pathfind`, 0);

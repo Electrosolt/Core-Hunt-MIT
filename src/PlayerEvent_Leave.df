@@ -1,0 +1,8 @@
+PlayerEvent<"Leave">()
+    IfVar<"!=">(game:`%default room`, 0)
+    {
+        SelectObject<"PlayerName">(game:`%var(%default room).RedPlayer`, game:`%var(%default room).BluePlayer`);
+        PlayerAction<"SendMessage">("<red>» </red><yellow>%default left! </yellow><gray>Stopping game.");
+        SelectObject<"Reset">();
+        CallFunction<"CloseRoom">(game:`%default room`);
+    }

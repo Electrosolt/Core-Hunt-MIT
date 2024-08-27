@@ -1,5 +1,14 @@
-Function<"AI.WallPlace">(str: color)
-    Repeat<"Forever">()
+Function<"AI.WallPlace">(var: successful, str: color, num*: ensurePlacement = 1)
+    SetVar<"=">(line:`successful`, 0);
+    IfVar<"=">(line:`ensurePlacement`, 1)
+    {
+        SetVar<"=">(line:`reps`, 10000);
+    }
+    Else
+    {
+        SetVar<"=">(line:`reps`, 50);
+    }
+    Repeat<"Multiple">(line:`reps`)
     {
         SetVar<"RandomValue">(line:`strategy`, 'Random', 'Connect');
         SetVar<"=">(line:`wall`, 0);
@@ -24,5 +33,6 @@ Function<"AI.WallPlace">(str: color)
         CallFunction<"TileToLocation">(line:`loc2`, line:`tile2`);
         SetVar<"GetCenterLoc">(line:`loc`, line:`loc1`, line:`loc2`);
         CallFunction<"PlaceWall">(line:`wall`, line:`loc`);
+        SetVar<"=">(line:`successful`, 1);
         Control<"StopRepeat">();
     }

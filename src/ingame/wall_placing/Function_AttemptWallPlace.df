@@ -1,4 +1,4 @@
-Function<"AttemptWallPlace">()
+Function<"AttemptWallPlace">(item:polished_deepslate_wall)
     IfVar<"=">(0, local:`isWall`, local:`valid`)
     {
         PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may only place walls on wall spots.");

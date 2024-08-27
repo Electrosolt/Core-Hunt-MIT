@@ -1,0 +1,7 @@
+Function<"AI.Pathfind">(var: successful)
+    SetVar<"=">(line:`successful`, 0);
+    SetVar<"=">(line:`color`, game:`%var(ID).AI_Color`);
+    SetVar<"=">(line:`currentPos`, game:`%var(ID).%var(color)Pos`);
+    CallFunction<"AI.MoveTree">(line:`tree`, line:`currentPos`);
+    CallFunction<"AI.GetPath">(line:`path`, line:`tree`);
+    SetVar<"=">(game:`%var(ID).AI_Pathfind`, line:`path`);

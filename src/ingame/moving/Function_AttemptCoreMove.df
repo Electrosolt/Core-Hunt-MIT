@@ -1,4 +1,4 @@
-Function<"AttemptCoreMove">()
+Function<"AttemptCoreMove">(item:echo_shard)
     IfVar<"=">(local:`valid`, 0)
     {
         PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may only move to empty tiles.");
@@ -43,4 +43,4 @@ Function<"AttemptCoreMove">()
         Control<"Return">();
     }
     SetVar<"-=">(game:`%var(ID).Energy`, 3);
-    CallFunction<"MoveCore">(line:`corePos`, line:`moveToPos`);
+    CallFunction<"MoveCore">(line:`corePos`, line:`moveToPos`, game:`%default color`);

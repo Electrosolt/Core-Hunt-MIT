@@ -10,11 +10,26 @@ Function<"MakeSpawnMenu">(str: playerName)
         }
         Control<"Wait">(2);
     }
-    SetVar<"=">(line:`lineLoc`, [96.5,53.5,6.5]);
-    SetVar<"CreateList">(line:`lines`, "<gradient:red:blue>⏴ ᴄᴏʀᴇ ʜᴜɴᴛ ⏵", "» Play", "» Credits");
+    SetVar<"=">(line:`lineLoc`, [80.5,6,34.5]);
+    SetVar<"CreateList">(line:`lines`, "<gradient:red:blue>⏴ ᴄᴏʀᴇ ʜᴜɴᴛ ⏵", "<dark_gray>[<#e0b0d0><key:key.hotbar.1></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>Play vs. AI </gray>⏴", "<dark_gray>[<#e0b0d0><key:key.hotbar.2></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>Play Multiplayer </gray>⏴", "<dark_gray>[<#e0b0d0><key:key.hotbar.3></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>View Credits </gray>⏴", "", "<#cc66aa>⏵ <gray>Press number keys to pick </gray>⏴");
+    SetVar<"=">(line:`i`, 0);
     Repeat<"ForEach">(line:`text`, line:`lines`)
     {
+        SetVar<"+=">(line:`i`);
         GameAction<"SpawnTextDisplay">(line:`lineLoc`, line:`text`);
-        EntityAction<"SetCustomTag">('%default spawn_menu');
-        SetVar<"ShiftOnAxis">(line:`lineLoc`, -0.5)#Coordinate=Y;
+        EntityAction<"SetCustomTag">('%default spawn_menu', 1)@LastEntity;
+        EntityAction<"SetCustomTag">('hide_on_join', 1)@LastEntity;
+        IfVar<"=">(line:`i`, 1)
+        {
+            EntityAction<"DisplayScale">(3, 3, 3);
+        }
+        Else
+        {
+            EntityAction<"DisplayScale">(1.5, 1.5, 1.5);
+        }
+        SetVar<"ShiftOnAxis">(line:`lineLoc`, -0.6)#Coordinate=Y;
+        SetVar<"=">(line:`uuid`, GV(UUID)@LastEntity);
+        SelectObject<"PlayerName | NOT">('%default');
+        PlayerAction<"SetEntityHidden">(line:`uuid`);
+        SelectObject<"Reset">();
     }

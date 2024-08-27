@@ -41,12 +41,12 @@ Function<"RoomLoop2">()
     IfVar<"=">(game:`%var(ID).Status`, 'TurnStart')
     {
         SetVar<"RandomNumber">(game:`%var(ID).Energy`, 1, 6);
-        SetVar<"StyledText">(line:`energyText`, game:`EnergyColor`, "%var(%var(ID).Energy)⚡");
-        SetVar<"StyledText">(line:`turnText`, game:`%var(%var(ID).Turn)Color`, "%var(%var(ID).%var(%var(ID).Turn)Player)'s <gray>Turn");
+        SetVar<"StyledText">(line:`turnText`, game:`%var(%var(ID).Turn)Color`, "%var(%var(ID).%var(%var(ID).Turn)Player)'s <gray>Turn <#cc66aa>(", game:`EnergyColor`, "%var(%var(ID).Energy)⚡<#cc66aa>)");
         SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
-        PlayerAction<"SendTitle">(line:`energyText`, line:`turnText`, 40, 5, 15);
+        PlayerAction<"SendTitle">("", line:`turnText`, 40, 5, 15);
         PlayerAction<"PlayEntitySound">('%selected', Sound{Experience Orb Pickup|p=0.5|vol=0.8});
         SelectObject<"Reset">();
+        CallFunction<"AI.TurnStart">();
         SetVar<"=">(game:`%var(ID).Status`, 'Turn');
         SetVar<"=">(game:`%var(ID).LoopTick`, 0);
     }

@@ -2,9 +2,11 @@ Process<"PlayerLoop">()
     IfVar<"=">(game:`%default mode`, 'Spawn', 'Verification')
     {
         PlayerAction<"SetFoodLevel">(6);
-        PlayerAction<"GivePotion">(Pot{Jump Boost -100 for ∞})#ShowIcon=False#EffectParticles=None;
+        PlayerAction<"GivePotion">(Pot{Jump Boost -100 for ∞}, Pot{Invisibility 1 for ∞})#ShowIcon=False#EffectParticles=None;
         PlayerAction<"SetSpeed">(0);
         PlayerAction<"SetAllowFlight">()#AllowFlight=Disable;
+        PlayerAction<"SetSlot">(9);
+        CallFunction<"StopSpawnSlip">();
     }
     IfVar<"=">(game:`%default mode`, 'Ingame')
     {

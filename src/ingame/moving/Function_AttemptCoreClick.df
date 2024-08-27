@@ -1,4 +1,4 @@
-Function<"AttemptCoreClick">()
+Function<"AttemptCoreClick">(item:echo_shard)
     IfVar<"<">(game:`%var(ID).Energy`, 3)
     {
         PlayerAction<"SendMessage">("<red>» Error! </red><gray>Not enough energy. (Needs <#cc66aa>3⚡</#cc66aa>)");

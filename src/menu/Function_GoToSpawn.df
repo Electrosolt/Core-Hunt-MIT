@@ -1,5 +1,5 @@
 Function<"GoToSpawn">()
-    PlayerAction<"Teleport">([93.5,51,6.5,0,-90]);
+    PlayerAction<"Teleport">([77.5,3,34.5,0,-90]);
     IfVar<"=">(game:`%default validPassword`, 0)
     {
         SetVar<"=">(game:`%default mode`, 'Verification');

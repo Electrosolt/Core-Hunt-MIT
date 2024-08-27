@@ -1,0 +1,2 @@
+Function<"AI.EndTurn">()
+    SetVar<"=">(game:`%var(ID).AI_TryEndTurn`, 1);

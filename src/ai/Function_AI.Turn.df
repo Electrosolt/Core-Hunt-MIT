@@ -1,0 +1,63 @@
+Function<"AI.Turn">()
+    SetVar<"GetDictSize">(line:`unvisited`, game:`%var(ID).AI_Unvisited`);
+    IfVar<"=">(line:`unvisited`, 0)
+    {
+        CallFunction<"AI.Init">();
+    }
+    IfVar<"=">(game:`%var(ID).Energy`, 0)
+    {
+        CallFunction<"AI.EndTurn">();
+        SetVar<"=">(local:`successfulTurn`, 1);
+        Control<"Return">();
+    }
+    IfVar<">=">(game:`%var(ID).Energy`, 4)
+    {
+        SetVar<"RandomValue">(local:`action`, 'move', 'move', 'wall', 'scan5x5', 'scanX', 'scanZ', 'movecore');
+    }
+    Else
+    {
+        IfVar<">=">(game:`%var(ID).Energy`, 2)
+        {
+            SetVar<"RandomValue">(local:`action`, 'move', 'move', 'move', 'wall', 'wall');
+        }
+        Else
+        {
+            SetVar<"=">(local:`action`, 'move');
+        }
+    }
+    IfVar<"=">(game:`DebugMode`, 1)
+    {
+        PlayerAction<"SendMessage">()@AllPlayers;
+    }
+    IfVar<"=">(local:`action`, 'wall')
+    {
+        CallFunction<"AI.WallPlace">(local:`successfulTurn`, game:`%var(ID).Turn`, 0);
+        IfVar<"=">(local:`successfulTurn`, 1)
+        {
+            SetVar<"-=">(game:`%var(ID).Energy`, 2);
+        }
+    }
+    IfVar<"=">(local:`action`, 'scan5x5')
+    {
+        IfVar<"<=">(game:`%var(ID).AI_5x5Cooldown`, 0)
+        {
+            SetVar<"=">(game:`%var(ID).AI_5x5Cooldown`, 4);
+            CallFunction<"TileToCoords">(line:`x`, line:`z`, game:`%var(ID).%var(%var(ID).Turn)Pos`);
+            CallFunction<"Get5x5">(line:`region`, line:`x`, line:`z`);
+            CallFunction<"AI.PerformScan">(line:`region`);
+            SetVar<"=">(local:`successfulTurn`, 1);
+        }
+    }
+    IfVar<"=">(local:`action`, 'scanX')
+    {
+        SetVar<"ListLength">(line:`remaining`, game:`%var(ID).AI_UnscannedX`);
+        IfVar<">">(line:`remaining`, 0)
+        {
+            SetVar<"RandomValue">(line:`x`, game:`%var(ID).AI_UnscannedX`);
+            SetVar<"RemoveListValue">(game:`%var(ID).AI_UnscannedX`, line:`x`);
+            CallFunction<"GetXLine">(line:`region`, line:`x`);
+            CallFunction<"AI.PerformScan">(line:`region`);
+            SetVar<"=">(local:`successfulTurn`, 1);
+        }
+    }
+    CallFunction<"AI.Turn2">();

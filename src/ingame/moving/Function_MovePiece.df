@@ -1,25 +1,25 @@
-Function<"MovePiece">(item:blaze_rod, str: currentPos, str: moveToPos)
+Function<"MovePiece">(item:blaze_rod, str: currentPos, str: moveToPos, str: color)
     CallFunction<"TileToLocation">(line:`currentLoc`, line:`currentPos`);
     CallFunction<"TileToLocation">(line:`newLoc`, line:`moveToPos`);
+    SetVar<"=">(line:`oppColor`, game:`%var(color)Opposite`);
     IfGame<"BlockEquals">(line:`currentLoc`, item:amethyst_block)
     {
         GameAction<"BreakBlock">(line:`currentLoc`);
-        GameAction<"SetBlock">(line:`currentLoc`, game:`%var(%var(%default color)Opposite)PieceBlock`);
+        GameAction<"SetBlock">(line:`currentLoc`, game:`%var(oppColor)PieceBlock`);
     }
     Else
     {
         GameAction<"BreakBlock">(line:`currentLoc`);
     }
-    IfGame<"BlockEquals">(line:`newLoc`, game:`%var(%var(%default color)Opposite)PieceBlock`)
+    IfGame<"BlockEquals">(line:`newLoc`, game:`%var(oppColor)PieceBlock`)
     {
         GameAction<"SetBlock">(line:`newLoc`, item:amethyst_block);
     }
     Else
     {
-        GameAction<"SetBlock">(line:`newLoc`, game:`%var(%default color)PieceBlock`);
+        GameAction<"SetBlock">(line:`newLoc`, game:`%var(color)PieceBlock`);
     }
-    SetVar<"=">(game:`%var(ID).%var(%default color)Pos`, line:`moveToPos`);
-    SetVar<"=">(line:`oppColor`, game:`%var(%var(ID).Turn)Opposite`);
+    SetVar<"=">(game:`%var(ID).%var(color)Pos`, line:`moveToPos`);
     SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
     IfVar<"ListContains">(game:`%var(ID).%var(oppColor)Cores`, line:`moveToPos`)
     {

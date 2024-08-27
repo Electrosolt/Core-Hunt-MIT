@@ -1,14 +1,20 @@
-Function<"MoveCore">(item:blaze_rod, str: currentPos, str: moveToPos)
-    SetVar<"SetListValue">(game:`%var(ID).%var(%var(ID).Turn)Cores`, game:`%var(ID).MovingCore`, line:`moveToPos`);
+Function<"MoveCore">(item:blaze_rod, str: currentPos, str: moveToPos, str: color)
+    SetVar<"SetListValue">(game:`%var(ID).%var(color)Cores`, game:`%var(ID).MovingCore`, line:`moveToPos`);
     CallFunction<"TileToLocation">(line:`currentLoc`, line:`currentPos`);
     SetVar<"ShiftAllAxes">(line:`c1`, line:`currentLoc`, -1, -1, -1);
     SetVar<"ShiftAllAxes">(line:`c2`, line:`currentLoc`, 1, -1, 1);
     PlayerAction<"ClearDispBlock">(line:`c1`, line:`c2`);
+    IfVar<"=">(game:`DebugMode`, 1)
+    {
+        PlayerAction<"ClearDispBlock">(line:`c1`, line:`c2`)@AllPlayers;
+    }
     CallFunction<"TileToLocation">(line:`newLoc`, line:`moveToPos`);
     SetVar<"ShiftAllAxes">(line:`c1`, line:`newLoc`, -1, -1, -1);
     SetVar<"ShiftAllAxes">(line:`c2`, line:`newLoc`, 1, -1, 1);
-    PlayerAction<"DisplayBlock">(game:`%var(%default color)Powder`, line:`c1`, line:`c2`);
+    PlayerAction<"DisplayBlock">(game:`%var(color)Powder`, line:`c1`, line:`c2`);
+    SetVar<"StyledText">(line:`msg`, "<#cc88dd>»<space>", game:`%var(color)Color`, game:`%var(ID).%var(color)Player`, "<space><gray>moved a core.");
     SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
+    PlayerAction<"SendMessage">(line:`msg`);
     PlayerAction<"PlayEntitySound">(Sound{Grindstone Use|p=1.5}, Sound{Respawn Anchor Charge|p=1.5}, '%selected');
     SelectObject<"Reset">();
     SetVar<"=">(game:`%var(ID).MovingCore`, 0);

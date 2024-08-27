@@ -1,0 +1,37 @@
+Function<"AI.MoveTree">(var: visited, str: from)
+    SetVar<"CreateList">(line:`pair`, line:`from`, 0);
+    SetVar<"CreateList">(line:`queue`, line:`pair`);
+    SetVar<"CreateDict">(line:`visited`);
+    Repeat<"Forever">()
+    {
+        SetVar<"ListLength">(line:`len`, line:`queue`);
+        IfVar<"=">(line:`len`, 0)
+        {
+            Control<"StopRepeat">();
+        }
+        SetVar<"PopListValue">(line:`pair`, line:`queue`, 1);
+        SetVar<"GetListValue">(line:`tile`, line:`pair`, 1);
+        SetVar<"GetListValue">(line:`parent`, line:`pair`, 2);
+        IfVar<"DictHasKey">(line:`visited`, line:`tile`)
+        {
+            Control<"Skip">();
+        }
+        SetVar<"SetDictValue">(line:`visited`, line:`tile`, line:`parent`);
+        CallFunction<"GetNeighbors">(line:`neighbors`, line:`tile`);
+        SetVar<"RandomizeList">(line:`neighbors`);
+        Repeat<"ForEach">(line:`neighbor`, line:`neighbors`)
+        {
+            IfVar<"DictHasKey">(line:`visited`, line:`neighbor`)
+            {
+                Control<"Skip">();
+            }
+            IfVar<"DictHasKey | NOT">(game:`%var(ID).Walls`, '%var(tile):%var(neighbor)')
+            {
+                IfVar<"DictHasKey | NOT">(game:`%var(ID).Walls`, '%var(neighbor):%var(tile)')
+                {
+                    SetVar<"CreateList">(line:`pair`, line:`neighbor`, line:`tile`);
+                    SetVar<"AppendValue">(line:`queue`, line:`pair`);
+                }
+            }
+        }
+    }

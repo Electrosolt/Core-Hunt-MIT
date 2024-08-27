@@ -1,0 +1,26 @@
+Function<"AI.GetPath">(var: path, dict: tree)
+    SetVar<"GetDictSize">(line:`leftToVisit`, game:`%var(ID).AI_Unvisited`);
+    IfVar<"=">(line:`leftToVisit`, 0)
+    {
+        CallFunction<"AI.Init">();
+    }
+    Repeat<"ForEachEntry">(line:`dest`, line:`ignored`, line:`tree`)
+    {
+        IfVar<"DictHasKey | NOT">(game:`%var(ID).AI_Unvisited`, line:`dest`)
+        {
+            Control<"Skip">();
+        }
+        SetVar<"=">(line:`current`, line:`dest`);
+        SetVar<"CreateList">(line:`path`);
+        Repeat<"Forever">()
+        {
+            SetVar<"GetDictValue">(line:`parent`, line:`tree`, line:`current`);
+            IfVar<"=">(line:`parent`, 0)
+            {
+                Control<"StopRepeat">();
+            }
+            SetVar<"AppendValue">(line:`path`, line:`current`);
+            SetVar<"=">(line:`current`, line:`parent`);
+        }
+        Control<"StopRepeat">();
+    }

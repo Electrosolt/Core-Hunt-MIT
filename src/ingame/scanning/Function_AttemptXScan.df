@@ -1,4 +1,4 @@
-Function<"AttemptXScan">()
+Function<"AttemptXScan">(item:iron_ingot)
     CallFunction<"GetBlockX">(line:`x`, line:`xMod`, local:`clickedBlock`);
     IfVar<"InRange | NOT">(line:`x`, 0, 9)
     {
@@ -11,4 +11,4 @@ Function<"AttemptXScan">()
         Control<"Return">();
     }
     CallFunction<"GetXLine">(line:`region`, line:`x`);
-    CallFunction<"AttemptScan">(line:`region`);
+    CallFunction<"AttemptScan">(line:`coresFound`, line:`region`);

@@ -1,0 +1,36 @@
+PlayerEvent<"ChangeSlot">()
+    IfVar<"=">(game:`%default mode`, 'Verification')
+    {
+        IfVar<"!=">(GV(Event Hotbar Slot), 9)
+        {
+            GameAction<"CancelEvent">();
+        }
+    }
+    IfVar<"=">(game:`%default mode`, 'Spawn')
+    {
+        GameAction<"CancelEvent">();
+        IfVar<"=">(GV(Event Hotbar Slot), 1)
+        {
+            SetVar<"RemoveListValue">(game:`MultiplayerQueue`, '%default');
+            CallFunction<"StartAIMatch">();
+        }
+        IfVar<"=">(GV(Event Hotbar Slot), 2)
+        {
+            IfVar<"ListContains">(game:`MultiplayerQueue`, '%default')
+            {
+                SetVar<"RemoveListValue">(game:`MultiplayerQueue`, '%default');
+                PlayerAction<"SendMessage">("<#cc88dd>» <gray>Left the queue!");
+            }
+            Else
+            {
+                SetVar<"AppendValue">(game:`MultiplayerQueue`, '%default');
+                PlayerAction<"SendMessage">("<#cc88dd>» <gray>Entered the queue!");
+                CallFunction<"StartMPMatch">();
+            }
+        }
+        IfVar<"=">(GV(Event Hotbar Slot), 3)
+        {
+            PlayerAction<"SendMessageSeq">("<dark_gray><st><space:16></st>[ <gradient:red:blue>Core Hunt Credits</gradient> ]<st><space:16>", "", "<red>⏴ <gray>Concept, Code, and Art <blue>⏵", "<#cc88dd>Electrosolt", "", "<red>⏴ <gray>Playtesting <blue>⏵", "<#cc88dd>DeepSeaBlue<space:3>RebixCube<space:3>techGeneral", "", "<red>⏴ <gray>Platform <blue>⏵", "<#cc88dd>MC DiamondFire", "", "<dark_gray><st><space:16></st>[ <gradient:red:blue>Core Hunt Credits</gradient> ]<st><space:16>", 0)#AlignmentMode=Centered;
+            PlayerAction<"PlaySound">(Sound{Challenge Complete|p=2|vol=0.7});
+        }
+    }

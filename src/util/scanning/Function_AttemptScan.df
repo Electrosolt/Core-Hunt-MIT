@@ -1,4 +1,5 @@
-Function<"AttemptScan">(list: region)
+Function<"AttemptScan">(item:ender_eye, var: coresFound, list: region)
+    SetVar<"=">(line:`coresFound`, -1);
     IfVar<">=">(game:`%var(ID).Energy`, 3)
     {
         SetVar<"-=">(game:`%var(ID).Energy`, 3);
@@ -8,6 +9,8 @@ Function<"AttemptScan">(list: region)
         PlayerAction<"SendMessage">("<red>» Error! </red><gray>Not enough energy. (Needs <#cc66aa>3⚡</#cc66aa>)");
         Control<"Return">();
     }
+    SetVar<"=">(local:`scanAnimRegion`, line:`region`);
+    StartProcess<"ScanAnim">()#LocalVariables=Copy;
     SetVar<"=">(line:`oppCores`, game:`%var(ID).%var(%var(%var(ID).Turn)Opposite)Cores`);
     SetVar<"=">(line:`total`, 0);
     Repeat<"ForEach">(line:`tile`, line:`region`)
@@ -28,3 +31,4 @@ Function<"AttemptScan">(list: region)
     }
     PlayerAction<"PlayEntitySound">(Sound{Beacon Power Select#power3|p=1.498}, Sound{Beacon Power Select#power3|p=2}, '%selected');
     SelectObject<"Reset">();
+    SetVar<"=">(line:`coresFound`, line:`total`);

@@ -1,5 +1,5 @@
-Function<"AttemptEndTurn">()
-    SetVar<"StyledText">(line:`message`, "<#cc66dd>»<space>", game:`%var(%var(ID).Turn)Color`, "%default <gray>ended their turn. Switching turns.");
+Function<"AttemptEndTurn">(item:redstone)
+    SetVar<"StyledText">(line:`message`, "<#cc66dd>»<space>", game:`%var(%var(ID).Turn)Color`, "%var(%var(ID).%var(%var(ID).Turn)Player) <gray>ended their turn. Switching turns.");
     SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
     PlayerAction<"SendMessage">(line:`message`);
     PlayerAction<"PlayEntitySound">('%selected', Sound{Book Page Turn|p=1.5}, Sound{Cartography Table Take Result});

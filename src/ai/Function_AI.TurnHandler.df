@@ -1,0 +1,38 @@
+Function<"AI.TurnHandler">()
+    IfVar<"=">(game:`%var(ID).AI_Enabled`, 0)
+    {
+        Control<"Return">();
+    }
+    IfVar<"!=">(game:`%var(ID).%var(%var(ID).Turn)Player`, 'AI')
+    {
+        Control<"Return">();
+    }
+    IfVar<"<">(game:`%var(ID).LoopTick`, 20)
+    {
+        Control<"Return">();
+    }
+    SetVar<"%">(line:`mod`, game:`%var(ID).LoopTick`, 20)#RemainderMode=Modulo;
+    IfVar<"=">(line:`mod`, 1)
+    {
+        IfVar<"=">(game:`%var(ID).AI_TryEndTurn`, 1)
+        {
+            CallFunction<"AttemptEndTurn">();
+            Control<"Return">();
+        }
+        IfVar<"!=">(game:`%var(ID).AI_Pathfind`, 0)
+        {
+            CallFunction<"AI.Move">();
+        }
+        Else
+        {
+            SetVar<"=">(local:`successfulTurn`, 0);
+            Repeat<"Multiple">(50)
+            {
+                CallFunction<"AI.Turn">();
+                IfVar<"=">(local:`successfulTurn`, 1)
+                {
+                    Control<"StopRepeat">();
+                }
+            }
+        }
+    }

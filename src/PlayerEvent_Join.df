@@ -9,6 +9,10 @@ PlayerEvent<"Join">()
     StartProcess<"PlayerLoopH">();
     CallFunction<"GoToSpawn">();
     SetVar<"=">(game:`%default passwordSubtitle`, "<gray>Input it by typing </gray><yellow>@password</yellow><gray> in chat.");
+    SelectObject<"EntitiesCond | HasCustomTag">('hide_on_join', 1);
+    SetVar<"=">(line:`toHide`, GV(Selection Target UUIDs));
+    SelectObject<"Reset">();
+    PlayerAction<"SetEntityHidden">(line:`toHide`);
     Repeat<"Forever">()
     {
         PlayerAction<"SendTitle">("<gradient:red:#4488ff>Please enter password:", game:`%default passwordSubtitle`, 60, 0, 20);

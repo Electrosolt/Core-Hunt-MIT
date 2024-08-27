@@ -9,6 +9,10 @@ PlayerEvent<"Join">()
     StartProcess<"PlayerLoopH">();
     CallFunction<"GoToSpawn">();
     SetVar<"=">(game:`%default passwordSubtitle`, "<gray>Input it by typing </gray><yellow>@password</yellow><gray> in chat.");
+    SelectObject<"EntitiesCond | HasCustomTag">('hide_on_join', 1);
+    SetVar<"=">(line:`toHide`, GV(Selection Target UUIDs));
+    SelectObject<"Reset">();
+    PlayerAction<"SetEntityHidden">(line:`toHide`);
     Repeat<"Forever">()
     {
         PlayerAction<"SendTitle">("<gradient:red:#4488ff>Please enter password:", game:`%default passwordSubtitle`, 60, 0, 20);
@@ -37,13 +41,13 @@ PlayerEvent<"Command">()
         }
         Control<"End">();
     }
-    IfGame<"CommandEquals">('start')
-    {
-        CallFunction<"StartAIMatch">();
-    }
+    SetVar<"=">(local:`ID`, game:`%default room`);
     IfGame<"CommandEquals">('ab')
     {
         SetVar<"-">(game:`ActionBarOff`, 1, game:`ActionBarOff`);
+    }
+    IfGame<"CommandEquals">('credits')
+    {
     }
 
 --------------------------
@@ -123,14 +127,63 @@ PlayerEvent<"DropItem | LS-CANCEL">()
 
 --------------------------
 
+PlayerEvent<"Leave">()
+    IfVar<"!=">(game:`%default room`, 0)
+    {
+        SelectObject<"PlayerName">(game:`%var(%default room).RedPlayer`, game:`%var(%default room).BluePlayer`);
+        PlayerAction<"SendMessage">("<red>» </red><yellow>%default left! </yellow><gray>Stopping game.");
+        SelectObject<"Reset">();
+        CallFunction<"CloseRoom">(game:`%default room`);
+    }
+
+--------------------------
+
+PlayerEvent<"ChangeSlot">()
+    IfVar<"=">(game:`%default mode`, 'Verification')
+    {
+        IfVar<"!=">(GV(Event Hotbar Slot), 9)
+        {
+            GameAction<"CancelEvent">();
+        }
+    }
+    IfVar<"=">(game:`%default mode`, 'Spawn')
+    {
+        GameAction<"CancelEvent">();
+        IfVar<"=">(GV(Event Hotbar Slot), 1)
+        {
+            SetVar<"RemoveListValue">(game:`MultiplayerQueue`, '%default');
+            CallFunction<"StartAIMatch">();
+        }
+        IfVar<"=">(GV(Event Hotbar Slot), 2)
+        {
+            IfVar<"ListContains">(game:`MultiplayerQueue`, '%default')
+            {
+                SetVar<"RemoveListValue">(game:`MultiplayerQueue`, '%default');
+                PlayerAction<"SendMessage">("<#cc88dd>» <gray>Left the queue!");
+            }
+            Else
+            {
+                SetVar<"AppendValue">(game:`MultiplayerQueue`, '%default');
+                PlayerAction<"SendMessage">("<#cc88dd>» <gray>Entered the queue!");
+                CallFunction<"StartMPMatch">();
+            }
+        }
+        IfVar<"=">(GV(Event Hotbar Slot), 3)
+        {
+            PlayerAction<"SendMessageSeq">("<dark_gray><st><space:16></st>[ <gradient:red:blue>Core Hunt Credits</gradient> ]<st><space:16>", "", "<red>⏴ <gray>Concept, Code, and Art <blue>⏵", "<#cc88dd>Electrosolt", "", "<red>⏴ <gray>Playtesting <blue>⏵", "<#cc88dd>DeepSeaBlue<space:3>RebixCube<space:3>techGeneral", "", "<red>⏴ <gray>Platform <blue>⏵", "<#cc88dd>MC DiamondFire", "", "<dark_gray><st><space:16></st>[ <gradient:red:blue>Core Hunt Credits</gradient> ]<st><space:16>", 0)#AlignmentMode=Centered;
+            PlayerAction<"PlaySound">(Sound{Challenge Complete|p=2|vol=0.7});
+        }
+    }
+
+--------------------------
+
 PlayerEvent<"SwapHands | LS-CANCEL">()
     GameAction<"CancelEvent">();
-    SetVar<"=">(game:`%var(%default room).Energy`, 6);
 
 --------------------------
 
 Function<"GoToSpawn">()
-    PlayerAction<"Teleport">([93.5,51,6.5,0,-90]);
+    PlayerAction<"Teleport">([77.5,3,34.5,0,-90]);
     IfVar<"=">(game:`%default validPassword`, 0)
     {
         SetVar<"=">(game:`%default mode`, 'Verification');
@@ -150,6 +203,7 @@ Function<"GoToSpawn">()
 
 Function<"Constants">()
     SetVar<"CreateList">(game:`rooms`, 'empty', 'empty', 'empty', 'empty', 'empty');
+    SetVar<"CreateList">(game:`MultiplayerQueue`);
     SetVar<"=">(game:`RedCore`, item:red_stained_glass);
     SetVar<"=">(game:`BlueCore`, item:blue_stained_glass);
     SetVar<"=">(game:`RedOpposite`, 'Blue');
@@ -177,6 +231,7 @@ Function<"Constants">()
     SetVar<"=">(game:`BlueExplosionParticle`, PFX{100.0xItem|material=BLUE_GLAZED_TERRACOTTA|motionVariation=40|x=0|y=10|z=0});
     SetVar<"=">(game:`RedFirework`, item:firework_rocket);
     SetVar<"=">(game:`BlueFirework`, item:firework_rocket);
+    SetVar<"SetItemType">(game:`Air`, item:grass_block, 'air');
 
 --------------------------
 
@@ -209,7 +264,7 @@ Function<"StartRoom">(item:gold_block, num: IDNum, loc: corner, loc: redStart, l
     SetVar<"CreateList">(game:`%var(ID).RedCores`);
     SetVar<"CreateList">(game:`%var(ID).BlueCores`);
     SetVar<"CreateDict">(game:`%var(ID).Walls`);
-    SetVar<"=">(game:`%var(ID).InitialWallMax`, 4);
+    SetVar<"=">(game:`%var(ID).InitialWallMax`, 40);
     SetVar<"=">(game:`%var(ID).InitialWallsPlaced`, 0);
     SetVar<"=">(game:`%var(ID).Energy`, 0);
     CallFunction<"PlayerEnter">('Red');
@@ -221,6 +276,18 @@ Function<"StartRoom">(item:gold_block, num: IDNum, loc: corner, loc: redStart, l
     GameAction<"SetBlock">(game:`BluePieceBlock`, line:`bluePos`);
     SetVar<"=">(game:`%var(ID).RedPos`, game:`RedStartCoords`);
     SetVar<"=">(game:`%var(ID).BluePos`, game:`BlueStartCoords`);
+    IfVar<"=">('AI', line:`redPlayer`, line:`bluePlayer`)
+    {
+        SetVar<"=">(game:`%var(ID).AI_Enabled`, 1);
+        IfVar<"=">(line:`redPlayer`, 'AI')
+        {
+            SetVar<"=">(game:`%var(ID).AI_Color`, 'Red');
+        }
+        Else
+        {
+            SetVar<"=">(game:`%var(ID).AI_Color`, 'Blue');
+        }
+    }
 
 --------------------------
 
@@ -300,9 +367,10 @@ Function<"StartAIMatch">()
 Function<"PlayerEnter">(str: color)
     SelectObject<"PlayerName">(game:`%var(ID).%var(color)Player`);
     SetVar<"=">(game:`%selected mode`, 'Ingame');
-    SetVar<"=">(game:`%default room`, local:`ID`);
-    SetVar<"=">(game:`%default color`, line:`color`);
+    SetVar<"=">(game:`%selected room`, local:`ID`);
+    SetVar<"=">(game:`%selected color`, line:`color`);
     PlayerAction<"Teleport">(game:`%var(ID).%var(color)Start`);
+    PlayerAction<"SetSlot">(1);
     PlayerAction<"SetAllowFlight">();
     PlayerAction<"SetFlying">();
     PlayerAction<"SetSpeed">(100)#SpeedType=Both;
@@ -310,6 +378,9 @@ Function<"PlayerEnter">(str: color)
     PlayerAction<"SendTitle">("<gradient:red:blue>⏴ ᴄᴏʀᴇ ʜᴜɴᴛ ⏵", line:`vsText`);
     PlayerAction<"PlayEntitySound">(Sound{Ender Dragon (Note Block)|p=2|vol=0.5}, '%selected');
     CallFunction<"ClearGrid">();
+    SetVar<"=">(line:`name`, '%selected');
+    SelectObject<"EntitiesCond | HasCustomTag">('%var(name) spawn_menu');
+    EntityAction<"Remove">();
     SelectObject<"Reset">();
 
 --------------------------
@@ -469,18 +540,6 @@ Function<"TileToLocation">(item:map, var: tileCenter, str: tileID)
 
 --------------------------
 
-Function<"ClearGrid">()
-    SetVar<"ShiftAllAxes">(line:`c1`, game:`%var(ID).Corner`, -2, -1, -2);
-    SetVar<"ShiftAllAxes">(line:`c2`, game:`%var(ID).Corner`, 37, -1, 3);
-    Repeat<"Multiple">(13)
-    {
-        PlayerAction<"ClearDispBlock">(line:`c1`, line:`c2`);
-        SetVar<"ShiftOnAxis">(line:`c1`, 3)#Coordinate=Z;
-        SetVar<"ShiftOnAxis">(line:`c2`, 3)#Coordinate=Z;
-    }
-
---------------------------
-
 Function<"RoomLoop2">()
     IfVar<"=">(game:`%var(ID).Status`, 'PlacingWalls')
     {
@@ -524,12 +583,12 @@ Function<"RoomLoop2">()
     IfVar<"=">(game:`%var(ID).Status`, 'TurnStart')
     {
         SetVar<"RandomNumber">(game:`%var(ID).Energy`, 1, 6);
-        SetVar<"StyledText">(line:`energyText`, game:`EnergyColor`, "%var(%var(ID).Energy)⚡");
-        SetVar<"StyledText">(line:`turnText`, game:`%var(%var(ID).Turn)Color`, "%var(%var(ID).%var(%var(ID).Turn)Player)'s <gray>Turn");
+        SetVar<"StyledText">(line:`turnText`, game:`%var(%var(ID).Turn)Color`, "%var(%var(ID).%var(%var(ID).Turn)Player)'s <gray>Turn <#cc66aa>(", game:`EnergyColor`, "%var(%var(ID).Energy)⚡<#cc66aa>)");
         SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
-        PlayerAction<"SendTitle">(line:`energyText`, line:`turnText`, 40, 5, 15);
+        PlayerAction<"SendTitle">("", line:`turnText`, 40, 5, 15);
         PlayerAction<"PlayEntitySound">('%selected', Sound{Experience Orb Pickup|p=0.5|vol=0.8});
         SelectObject<"Reset">();
+        CallFunction<"AI.TurnStart">();
         SetVar<"=">(game:`%var(ID).Status`, 'Turn');
         SetVar<"=">(game:`%var(ID).LoopTick`, 0);
     }
@@ -537,8 +596,17 @@ Function<"RoomLoop2">()
 
 --------------------------
 
-Function<"AI.WallPlace">(str: color)
-    Repeat<"Forever">()
+Function<"AI.WallPlace">(var: successful, str: color, num*: ensurePlacement = 1)
+    SetVar<"=">(line:`successful`, 0);
+    IfVar<"=">(line:`ensurePlacement`, 1)
+    {
+        SetVar<"=">(line:`reps`, 10000);
+    }
+    Else
+    {
+        SetVar<"=">(line:`reps`, 50);
+    }
+    Repeat<"Multiple">(line:`reps`)
     {
         SetVar<"RandomValue">(line:`strategy`, 'Random', 'Connect');
         SetVar<"=">(line:`wall`, 0);
@@ -563,6 +631,7 @@ Function<"AI.WallPlace">(str: color)
         CallFunction<"TileToLocation">(line:`loc2`, line:`tile2`);
         SetVar<"GetCenterLoc">(line:`loc`, line:`loc1`, line:`loc2`);
         CallFunction<"PlaceWall">(line:`wall`, line:`loc`);
+        SetVar<"=">(line:`successful`, 1);
         Control<"StopRepeat">();
     }
 
@@ -633,18 +702,33 @@ Function<"MakeSpawnMenu">(str: playerName)
         }
         Control<"Wait">(2);
     }
-    SetVar<"=">(line:`lineLoc`, [96.5,53.5,6.5]);
-    SetVar<"CreateList">(line:`lines`, "<gradient:red:blue>⏴ ᴄᴏʀᴇ ʜᴜɴᴛ ⏵", "» Play", "» Credits");
+    SetVar<"=">(line:`lineLoc`, [80.5,6,34.5]);
+    SetVar<"CreateList">(line:`lines`, "<gradient:red:blue>⏴ ᴄᴏʀᴇ ʜᴜɴᴛ ⏵", "<dark_gray>[<#e0b0d0><key:key.hotbar.1></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>Play vs. AI </gray>⏴", "<dark_gray>[<#e0b0d0><key:key.hotbar.2></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>Play Multiplayer </gray>⏴", "<dark_gray>[<#e0b0d0><key:key.hotbar.3></#e0b0d0>]</dark_gray> <#cc66aa>⏵ <gray>View Credits </gray>⏴", "", "<#cc66aa>⏵ <gray>Press number keys to pick </gray>⏴");
+    SetVar<"=">(line:`i`, 0);
     Repeat<"ForEach">(line:`text`, line:`lines`)
     {
+        SetVar<"+=">(line:`i`);
         GameAction<"SpawnTextDisplay">(line:`lineLoc`, line:`text`);
-        EntityAction<"SetCustomTag">('%default spawn_menu');
-        SetVar<"ShiftOnAxis">(line:`lineLoc`, -0.5)#Coordinate=Y;
+        EntityAction<"SetCustomTag">('%default spawn_menu', 1)@LastEntity;
+        EntityAction<"SetCustomTag">('hide_on_join', 1)@LastEntity;
+        IfVar<"=">(line:`i`, 1)
+        {
+            EntityAction<"DisplayScale">(3, 3, 3);
+        }
+        Else
+        {
+            EntityAction<"DisplayScale">(1.5, 1.5, 1.5);
+        }
+        SetVar<"ShiftOnAxis">(line:`lineLoc`, -0.6)#Coordinate=Y;
+        SetVar<"=">(line:`uuid`, GV(UUID)@LastEntity);
+        SelectObject<"PlayerName | NOT">('%default');
+        PlayerAction<"SetEntityHidden">(line:`uuid`);
+        SelectObject<"Reset">();
     }
 
 --------------------------
 
-Function<"AttemptWallPlace">()
+Function<"AttemptWallPlace">(item:polished_deepslate_wall)
     IfVar<"=">(0, local:`isWall`, local:`valid`)
     {
         PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may only place walls on wall spots.");
@@ -727,28 +811,6 @@ Function<"CloseRoom">(item:dark_oak_door, str: roomID)
 
 --------------------------
 
-Function<"IngameLoop">()
-    SetVar<"=">(local:`ID`, game:`%default room`);
-    PlayerAction<"RemovePotion">(Pot{Jump Boost -100 for ∞});
-    PlayerAction<"SetFoodLevel">(20);
-    PlayerAction<"SetSpeed">(100)#SpeedType=Both;
-    Repeat<"ForEach">(line:`core`, game:`%var(ID).%var(%default color)Cores`)
-    {
-        CallFunction<"TileToLocation">(line:`center`, line:`core`);
-        SetVar<"ShiftAllAxes">(line:`c1`, line:`center`, 1, -1, 1);
-        SetVar<"ShiftAllAxes">(line:`c2`, line:`center`, -1, -1, -1);
-        PlayerAction<"DisplayBlock">(line:`c1`, line:`c2`, game:`%var(%default color)Powder`);
-    }
-    Repeat<"ForEach">(line:`core`, game:`%var(ID).%var(%var(%default color)Opposite)Cores`)
-    {
-        CallFunction<"TileToLocation">(line:`center`, line:`core`);
-        SetVar<"ShiftAllAxes">(line:`c1`, line:`center`, 1, -1, 1);
-        SetVar<"ShiftAllAxes">(line:`c2`, line:`center`, -1, -1, -1);
-        PlayerAction<"DisplayBlock">(line:`c1`, line:`c2`, game:`%var(%var(%default color)Opposite)Powder`);
-    }
-
---------------------------
-
 Function<"WallToTileCoords">(var: x1, var: z1, var: x2, var: z2, str: wall)
     SetVar<"ReplaceString">(line:`parsed`, line:`wall`, ':', '|');
     SetVar<"SplitString">(line:`parsed`, line:`parsed`, '|');
@@ -786,15 +848,6 @@ Function<"PlaceWall">(item:prismarine_wall, str: wallID, loc: wallLoc)
 
 --------------------------
 
-Function<"WallToLoc">(var: location, str: wall)
-    SetVar<"TrimString">(line:`tile1`, line:`wall`, 1, 3);
-    SetVar<"TrimString">(line:`tile2`, line:`wall`, 5, 7);
-    CallFunction<"TileToLocation">(line:`loc1`, line:`tile1`);
-    CallFunction<"TileToLocation">(line:`loc2`, line:`tile2`);
-    SetVar<"GetCenterLoc">(line:`location`, line:`loc1`, line:`loc2`);
-
---------------------------
-
 Function<"InBoundsRaw">(var: result, num: x, num: z)
     SetVar<"=">(line:`result`, 0);
     IfVar<"InRange | NOT">(line:`x`, 0, 38)
@@ -806,30 +859,6 @@ Function<"InBoundsRaw">(var: result, num: x, num: z)
         Control<"Return">();
     }
     SetVar<"=">(line:`result`, 1);
-
---------------------------
-
-Function<"AI.Wall.Connect">(var: wall)
-    SetVar<"GetDictSize">(line:`size`, game:`%var(ID).Walls`);
-    IfVar<"=">(line:`size`, 0)
-    {
-        CallFunction<"AI.Wall.Random">(line:`wall`);
-        Control<"Return">();
-    }
-    SetVar<"GetDictKeys">(line:`placedWalls`, game:`%var(ID).Walls`);
-    SetVar<"RandomValue">(line:`adjWall`, line:`placedWalls`);
-    CallFunction<"GetAdjWalls">(line:`adjWalls`, line:`adjWall`);
-    SetVar<"RandomValue">(line:`wall`, line:`adjWalls`);
-
---------------------------
-
-Function<"AI.Wall.Random">(var: wall)
-    SetVar<"=">(line:`x`, %random(0,9));
-    SetVar<"=">(line:`z`, %random(0,9));
-    SetVar<"=">(line:`tile1`, '%var(x)|%var(z)');
-    CallFunction<"GetNeighbors">(line:`neighbors`, line:`tile1`);
-    SetVar<"RandomValue">(line:`tile2`, line:`neighbors`);
-    CallFunction<"MakeSortedWall">(line:`wall`, line:`tile1`, line:`tile2`);
 
 --------------------------
 
@@ -925,13 +954,6 @@ Function<"RoomLoop3">()
     IfVar<"=">(game:`%var(ID).Status`, 'Turn')
     {
         SetVar<"+=">(game:`%var(ID).LoopTick`);
-        IfVar<"=">(game:`%var(ID).LoopTick`, 1)
-        {
-            IfVar<"=">(game:`%var(ID).%var(%var(ID).Turn)Player`, 'AI')
-            {
-                SetVar<"=">(game:`%var(ID).LoopTick`, 1160);
-            }
-        }
         IfVar<"=">(game:`%var(ID).Energy`, 0)
         {
             IfVar<"<">(game:`%var(ID).LoopTick`, 1100)
@@ -955,6 +977,7 @@ Function<"RoomLoop3">()
                 PlayerAction<"ActionBar">("<#cc66aa>⏴ <#dd88cc>Energy: <#e0b0d0>%var(%var(ID).Energy)⚡ <#cc66aa>⏵");
             }
             SelectObject<"Reset">();
+            CallFunction<"AI.TurnHandler">();
         }
         Else
         {
@@ -977,23 +1000,14 @@ Function<"EndTurn">()
 
 --------------------------
 
-Function<"IsInBounds">(var: result, num: x, num: z)
-    SetVar<"=">(line:`result`, 0);
-    IfVar<"InRange | NOT">(line:`x`, 0, 9)
-    {
-        Control<"Return">();
-    }
-    IfVar<"InRange | NOT">(line:`z`, 0, 9)
-    {
-        Control<"Return">();
-    }
-    SetVar<"=">(line:`result`, 1);
-
---------------------------
-
 Function<"HeldItemLoop">()
     SetVar<"ShiftOnAxis">(local:`blockHit`, -0.5)#Coordinate=Y;
     SetVar<"=">(local:`currentTile`, game:`%var(ID).%var(%default color)Pos`);
+    SetVar<"=">(local:`doScanHighlight`, 0);
+    IfPlayer<"NoItemCooldown">(item:magma_cube_spawn_egg)
+    {
+        SetVar<"=">(local:`doScanHighlight`, 1);
+    }
     IfPlayer<"IsHolding">(game:`MoveItem`)#HandSlot=MainHand
     {
         CallFunction<"GetNeighbors">(line:`neighbors`, local:`currentTile`);
@@ -1038,10 +1052,13 @@ Function<"HeldItemLoop">()
     }
     IfPlayer<"IsHolding">(game:`Scan5x5Item`)#HandSlot=MainHand
     {
-        CallFunction<"TileToLocation">(line:`loc`, local:`currentTile`);
-        SetVar<"ShiftAllAxes">(line:`c1`, line:`loc`, -9.5, -0.5, -9.5);
-        SetVar<"ShiftAllAxes">(line:`c2`, line:`loc`, 9.5, -0.5, 9.5);
-        PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, 1, PFX{Electric Spark|motionVariation=100|x=1|y=0|z=0})#FillType=Hollow;
+        IfVar<"=">(local:`doScanHighlight`, 1)
+        {
+            CallFunction<"TileToLocation">(line:`loc`, local:`currentTile`);
+            SetVar<"ShiftAllAxes">(line:`c1`, line:`loc`, -9.5, -0.5, -9.5);
+            SetVar<"ShiftAllAxes">(line:`c2`, line:`loc`, 9.5, -0.5, 9.5);
+            PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, 1, PFX{Electric Spark|motionVariation=100|x=1|y=0|z=0})#FillType=Hollow;
+        }
     }
     CallFunction<"HeldItemLoop2">();
 
@@ -1076,7 +1093,7 @@ Function<"PlaceGhostWall">(item:prismarine_wall, str: wallID, loc: wallLoc, item
 
 --------------------------
 
-Function<"AttemptMove">()
+Function<"AttemptMove">(item:blaze_rod)
     IfVar<"=">(local:`valid`, 0)
     {
         PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may only move to normal tiles.");
@@ -1111,32 +1128,32 @@ Function<"AttemptMove">()
         Control<"Return">();
     }
     SetVar<"-=">(game:`%var(ID).Energy`);
-    CallFunction<"MovePiece">(line:`currentPos`, line:`moveToPos`);
+    CallFunction<"MovePiece">(line:`currentPos`, line:`moveToPos`, game:`%default color`);
 
 --------------------------
 
-Function<"MovePiece">(item:blaze_rod, str: currentPos, str: moveToPos)
+Function<"MovePiece">(item:blaze_rod, str: currentPos, str: moveToPos, str: color)
     CallFunction<"TileToLocation">(line:`currentLoc`, line:`currentPos`);
     CallFunction<"TileToLocation">(line:`newLoc`, line:`moveToPos`);
+    SetVar<"=">(line:`oppColor`, game:`%var(color)Opposite`);
     IfGame<"BlockEquals">(line:`currentLoc`, item:amethyst_block)
     {
         GameAction<"BreakBlock">(line:`currentLoc`);
-        GameAction<"SetBlock">(line:`currentLoc`, game:`%var(%var(%default color)Opposite)PieceBlock`);
+        GameAction<"SetBlock">(line:`currentLoc`, game:`%var(oppColor)PieceBlock`);
     }
     Else
     {
         GameAction<"BreakBlock">(line:`currentLoc`);
     }
-    IfGame<"BlockEquals">(line:`newLoc`, game:`%var(%var(%default color)Opposite)PieceBlock`)
+    IfGame<"BlockEquals">(line:`newLoc`, game:`%var(oppColor)PieceBlock`)
     {
         GameAction<"SetBlock">(line:`newLoc`, item:amethyst_block);
     }
     Else
     {
-        GameAction<"SetBlock">(line:`newLoc`, game:`%var(%default color)PieceBlock`);
+        GameAction<"SetBlock">(line:`newLoc`, game:`%var(color)PieceBlock`);
     }
-    SetVar<"=">(game:`%var(ID).%var(%default color)Pos`, line:`moveToPos`);
-    SetVar<"=">(line:`oppColor`, game:`%var(%var(ID).Turn)Opposite`);
+    SetVar<"=">(game:`%var(ID).%var(color)Pos`, line:`moveToPos`);
     SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
     IfVar<"ListContains">(game:`%var(ID).%var(oppColor)Cores`, line:`moveToPos`)
     {
@@ -1170,34 +1187,10 @@ Function<"Get5x5">(var: region, num: centerX, num: centerZ)
 
 --------------------------
 
-Function<"GetWallCorners">(loc: wallLoc, var: corner1, var: corner2)
-    SetVar<"AlignLoc">(line:`wallLoc`)#Rotation=RemoveRotation;
-    SetVar<"VectorBetween">(line:`vec`, game:`%var(ID).Corner`, line:`wallLoc`);
-    SetVar<"AddVectors">(line:`vec`, line:`vec`, 〈1,0,1〉);
-    SetVar<"GetVectorComp">(line:`x`, line:`vec`);
-    SetVar<"GetVectorComp">(line:`z`, line:`vec`)#Component=Z;
-    SetVar<"RoundNumber">(line:`divX`, line:`x`, 4)#RoundMode=Floor;
-    SetVar<"RoundNumber">(line:`divZ`, line:`z`, 4)#RoundMode=Floor;
-    IfVar<"=">(%math(%var(x) % 4), 3)
-    {
-        SetVar<"SetAllCoords">(line:`corner1`, line:`x`, 0, %math(%var(divZ)-1));
-        SetVar<"SetAllCoords">(line:`corner2`, line:`x`, 0, %math(%var(divZ)+3));
-    }
-    Else
-    {
-        SetVar<"SetAllCoords">(line:`corner1`, %math(%var(divX)-1), 0, line:`z`);
-        SetVar<"SetAllCoords">(line:`corner2`, %math(%var(divX)+3), 0, line:`z`);
-    }
-    SetVar<"+">(line:`corner1`, line:`corner1`, game:`%var(ID).Corner`, [-1,0,-1]);
-    SetVar<"+">(line:`corner2`, line:`corner2`, game:`%var(ID).Corner`, [-1,0,-1]);
-
---------------------------
-
 Function<"TileToCoords">(item:slime_ball, var: x, var: z, str: tileID)
-    SetVar<"TrimString">(line:`x`, line:`tileID`, 1, 1);
-    SetVar<"ParseNumber">(line:`x`);
-    SetVar<"TrimString">(line:`z`, line:`tileID`, 3, 3);
-    SetVar<"ParseNumber">(line:`z`);
+    SetVar<"SplitString">(line:`split`, line:`tileID`, '|');
+    SetVar<"=">(line:`x`, %index(split,1));
+    SetVar<"=">(line:`z`, %index(split,2));
 
 --------------------------
 
@@ -1217,44 +1210,50 @@ Function<"1tProt">()
 
 --------------------------
 
-Function<"Attempt5x5Scan">()
+Function<"Attempt5x5Scan">(item:shulker_shell)
     CallFunction<"TileToCoords">(line:`x`, line:`z`, game:`%var(ID).%var(%var(ID).Turn)Pos`);
     CallFunction<"Get5x5">(line:`region`, line:`x`, line:`z`);
-    CallFunction<"AttemptScan">(line:`region`);
+    CallFunction<"AttemptScan">(line:`coresFound`, line:`region`);
 
 --------------------------
 
 Function<"HeldItemLoop2">()
     IfPlayer<"IsHolding">(game:`ScanZItem`)#HandSlot=MainHand
     {
-        CallFunction<"GetBlockZ">(line:`z`, line:`zMod`, local:`blockHit`);
-        IfVar<"InRange | NOT">(line:`z`, 0, 9)
+        IfVar<"=">(local:`doScanHighlight`, 1)
         {
-            Control<"Return">();
-        }
-        IfVar<"!=">(line:`zMod`, 3)
-        {
-            CallFunction<"TileToLocation">(line:`c1`, '0|%var(z)');
-            CallFunction<"TileToLocation">(line:`c2`, '9|%var(z)');
-            SetVar<"ShiftAllAxes">(line:`c1`, -1.5, -0.5, -1.5);
-            SetVar<"ShiftAllAxes">(line:`c2`, 1.5, -0.5, 1.5);
-            PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, 1, PFX{Electric Spark|motionVariation=100|x=1|y=0|z=0})#FillType=Hollow;
+            CallFunction<"GetBlockZ">(line:`z`, line:`zMod`, local:`blockHit`);
+            IfVar<"InRange | NOT">(line:`z`, 0, 9)
+            {
+                Control<"Return">();
+            }
+            IfVar<"!=">(line:`zMod`, 3)
+            {
+                CallFunction<"TileToLocation">(line:`c1`, '0|%var(z)');
+                CallFunction<"TileToLocation">(line:`c2`, '9|%var(z)');
+                SetVar<"ShiftAllAxes">(line:`c1`, -1.5, -0.5, -1.5);
+                SetVar<"ShiftAllAxes">(line:`c2`, 1.5, -0.5, 1.5);
+                PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, 1, PFX{Electric Spark|motionVariation=100|x=1|y=0|z=0})#FillType=Hollow;
+            }
         }
     }
     IfPlayer<"IsHolding">(game:`ScanXItem`)#HandSlot=MainHand
     {
-        CallFunction<"GetBlockX">(line:`x`, line:`xMod`, local:`blockHit`);
-        IfVar<"InRange | NOT">(line:`x`, 0, 9)
+        IfVar<"=">(local:`doScanHighlight`, 1)
         {
-            Control<"Return">();
-        }
-        IfVar<"!=">(line:`xMod`, 3)
-        {
-            CallFunction<"TileToLocation">(line:`c1`, '%var(x)|0');
-            CallFunction<"TileToLocation">(line:`c2`, '%var(x)|9');
-            SetVar<"ShiftAllAxes">(line:`c1`, -1.5, -0.5, -1.5);
-            SetVar<"ShiftAllAxes">(line:`c2`, 1.5, -0.5, 1.5);
-            PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, 1, PFX{Electric Spark|motionVariation=100|x=1|y=0|z=0})#FillType=Hollow;
+            CallFunction<"GetBlockX">(line:`x`, line:`xMod`, local:`blockHit`);
+            IfVar<"InRange | NOT">(line:`x`, 0, 9)
+            {
+                Control<"Return">();
+            }
+            IfVar<"!=">(line:`xMod`, 3)
+            {
+                CallFunction<"TileToLocation">(line:`c1`, '%var(x)|0');
+                CallFunction<"TileToLocation">(line:`c2`, '%var(x)|9');
+                SetVar<"ShiftAllAxes">(line:`c1`, -1.5, -0.5, -1.5);
+                SetVar<"ShiftAllAxes">(line:`c2`, 1.5, -0.5, 1.5);
+                PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, 1, PFX{Electric Spark|motionVariation=100|x=1|y=0|z=0})#FillType=Hollow;
+            }
         }
     }
     IfVar<"=">(game:`%var(ID).Turn`, game:`%default color`)
@@ -1281,7 +1280,7 @@ Function<"GetZLine">(var: region, num: z)
 
 --------------------------
 
-Function<"AttemptZScan">()
+Function<"AttemptZScan">(item:gold_ingot)
     CallFunction<"GetBlockZ">(line:`z`, line:`zMod`, local:`clickedBlock`);
     IfVar<"InRange | NOT">(line:`z`, 0, 9)
     {
@@ -1294,11 +1293,11 @@ Function<"AttemptZScan">()
         Control<"Return">();
     }
     CallFunction<"GetZLine">(line:`region`, line:`z`);
-    CallFunction<"AttemptScan">(line:`region`);
+    CallFunction<"AttemptScan">(line:`coresFound`, line:`region`);
 
 --------------------------
 
-Function<"AttemptXScan">()
+Function<"AttemptXScan">(item:iron_ingot)
     CallFunction<"GetBlockX">(line:`x`, line:`xMod`, local:`clickedBlock`);
     IfVar<"InRange | NOT">(line:`x`, 0, 9)
     {
@@ -1311,12 +1310,12 @@ Function<"AttemptXScan">()
         Control<"Return">();
     }
     CallFunction<"GetXLine">(line:`region`, line:`x`);
-    CallFunction<"AttemptScan">(line:`region`);
+    CallFunction<"AttemptScan">(line:`coresFound`, line:`region`);
 
 --------------------------
 
-Function<"AttemptEndTurn">()
-    SetVar<"StyledText">(line:`message`, "<#cc66dd>»<space>", game:`%var(%var(ID).Turn)Color`, "%default <gray>ended their turn. Switching turns.");
+Function<"AttemptEndTurn">(item:redstone)
+    SetVar<"StyledText">(line:`message`, "<#cc66dd>»<space>", game:`%var(%var(ID).Turn)Color`, "%var(%var(ID).%var(%var(ID).Turn)Player) <gray>ended their turn. Switching turns.");
     SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
     PlayerAction<"SendMessage">(line:`message`);
     PlayerAction<"PlayEntitySound">('%selected', Sound{Book Page Turn|p=1.5}, Sound{Cartography Table Take Result});
@@ -1405,7 +1404,8 @@ Function<"MoveCoreLoop">()
 
 --------------------------
 
-Function<"AttemptScan">(list: region)
+Function<"AttemptScan">(item:ender_eye, var: coresFound, list: region)
+    SetVar<"=">(line:`coresFound`, -1);
     IfVar<">=">(game:`%var(ID).Energy`, 3)
     {
         SetVar<"-=">(game:`%var(ID).Energy`, 3);
@@ -1415,6 +1415,8 @@ Function<"AttemptScan">(list: region)
         PlayerAction<"SendMessage">("<red>» Error! </red><gray>Not enough energy. (Needs <#cc66aa>3⚡</#cc66aa>)");
         Control<"Return">();
     }
+    SetVar<"=">(local:`scanAnimRegion`, line:`region`);
+    StartProcess<"ScanAnim">()#LocalVariables=Copy;
     SetVar<"=">(line:`oppCores`, game:`%var(ID).%var(%var(%var(ID).Turn)Opposite)Cores`);
     SetVar<"=">(line:`total`, 0);
     Repeat<"ForEach">(line:`tile`, line:`region`)
@@ -1435,10 +1437,11 @@ Function<"AttemptScan">(list: region)
     }
     PlayerAction<"PlayEntitySound">(Sound{Beacon Power Select#power3|p=1.498}, Sound{Beacon Power Select#power3|p=2}, '%selected');
     SelectObject<"Reset">();
+    SetVar<"=">(line:`coresFound`, line:`total`);
 
 --------------------------
 
-Function<"AttemptCoreMove">()
+Function<"AttemptCoreMove">(item:echo_shard)
     IfVar<"=">(local:`valid`, 0)
     {
         PlayerAction<"SendMessage">("<red>» Error! </red><gray>You may only move to empty tiles.");
@@ -1483,7 +1486,7 @@ Function<"AttemptCoreMove">()
         Control<"Return">();
     }
     SetVar<"-=">(game:`%var(ID).Energy`, 3);
-    CallFunction<"MoveCore">(line:`corePos`, line:`moveToPos`);
+    CallFunction<"MoveCore">(line:`corePos`, line:`moveToPos`, game:`%default color`);
 
 --------------------------
 
@@ -1519,24 +1522,30 @@ Function<"GetCoreMoves">(var: moves, str: core, str: color)
 
 --------------------------
 
-Function<"MoveCore">(item:blaze_rod, str: currentPos, str: moveToPos)
-    SetVar<"SetListValue">(game:`%var(ID).%var(%var(ID).Turn)Cores`, game:`%var(ID).MovingCore`, line:`moveToPos`);
+Function<"MoveCore">(item:blaze_rod, str: currentPos, str: moveToPos, str: color)
+    SetVar<"SetListValue">(game:`%var(ID).%var(color)Cores`, game:`%var(ID).MovingCore`, line:`moveToPos`);
     CallFunction<"TileToLocation">(line:`currentLoc`, line:`currentPos`);
     SetVar<"ShiftAllAxes">(line:`c1`, line:`currentLoc`, -1, -1, -1);
     SetVar<"ShiftAllAxes">(line:`c2`, line:`currentLoc`, 1, -1, 1);
     PlayerAction<"ClearDispBlock">(line:`c1`, line:`c2`);
+    IfVar<"=">(game:`DebugMode`, 1)
+    {
+        PlayerAction<"ClearDispBlock">(line:`c1`, line:`c2`)@AllPlayers;
+    }
     CallFunction<"TileToLocation">(line:`newLoc`, line:`moveToPos`);
     SetVar<"ShiftAllAxes">(line:`c1`, line:`newLoc`, -1, -1, -1);
     SetVar<"ShiftAllAxes">(line:`c2`, line:`newLoc`, 1, -1, 1);
-    PlayerAction<"DisplayBlock">(game:`%var(%default color)Powder`, line:`c1`, line:`c2`);
+    PlayerAction<"DisplayBlock">(game:`%var(color)Powder`, line:`c1`, line:`c2`);
+    SetVar<"StyledText">(line:`msg`, "<#cc88dd>»<space>", game:`%var(color)Color`, game:`%var(ID).%var(color)Player`, "<space><gray>moved a core.");
     SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
+    PlayerAction<"SendMessage">(line:`msg`);
     PlayerAction<"PlayEntitySound">(Sound{Grindstone Use|p=1.5}, Sound{Respawn Anchor Charge|p=1.5}, '%selected');
     SelectObject<"Reset">();
     SetVar<"=">(game:`%var(ID).MovingCore`, 0);
 
 --------------------------
 
-Function<"AttemptCoreClick">()
+Function<"AttemptCoreClick">(item:echo_shard)
     IfVar<"<">(game:`%var(ID).Energy`, 3)
     {
         PlayerAction<"SendMessage">("<red>» Error! </red><gray>Not enough energy. (Needs <#cc66aa>3⚡</#cc66aa>)");
@@ -1621,6 +1630,483 @@ Function<"RoomLoop4">()
 
 --------------------------
 
+Function<"AI.Turn">()
+    SetVar<"GetDictSize">(line:`unvisited`, game:`%var(ID).AI_Unvisited`);
+    IfVar<"=">(line:`unvisited`, 0)
+    {
+        CallFunction<"AI.Init">();
+    }
+    IfVar<"=">(game:`%var(ID).Energy`, 0)
+    {
+        CallFunction<"AI.EndTurn">();
+        SetVar<"=">(local:`successfulTurn`, 1);
+        Control<"Return">();
+    }
+    IfVar<">=">(game:`%var(ID).Energy`, 4)
+    {
+        SetVar<"RandomValue">(local:`action`, 'move', 'move', 'wall', 'scan5x5', 'scanX', 'scanZ', 'movecore');
+    }
+    Else
+    {
+        IfVar<">=">(game:`%var(ID).Energy`, 2)
+        {
+            SetVar<"RandomValue">(local:`action`, 'move', 'move', 'move', 'wall', 'wall');
+        }
+        Else
+        {
+            SetVar<"=">(local:`action`, 'move');
+        }
+    }
+    IfVar<"=">(game:`DebugMode`, 1)
+    {
+        PlayerAction<"SendMessage">()@AllPlayers;
+    }
+    IfVar<"=">(local:`action`, 'wall')
+    {
+        CallFunction<"AI.WallPlace">(local:`successfulTurn`, game:`%var(ID).Turn`, 0);
+        IfVar<"=">(local:`successfulTurn`, 1)
+        {
+            SetVar<"-=">(game:`%var(ID).Energy`, 2);
+        }
+    }
+    IfVar<"=">(local:`action`, 'scan5x5')
+    {
+        IfVar<"<=">(game:`%var(ID).AI_5x5Cooldown`, 0)
+        {
+            SetVar<"=">(game:`%var(ID).AI_5x5Cooldown`, 4);
+            CallFunction<"TileToCoords">(line:`x`, line:`z`, game:`%var(ID).%var(%var(ID).Turn)Pos`);
+            CallFunction<"Get5x5">(line:`region`, line:`x`, line:`z`);
+            CallFunction<"AI.PerformScan">(line:`region`);
+            SetVar<"=">(local:`successfulTurn`, 1);
+        }
+    }
+    IfVar<"=">(local:`action`, 'scanX')
+    {
+        SetVar<"ListLength">(line:`remaining`, game:`%var(ID).AI_UnscannedX`);
+        IfVar<">">(line:`remaining`, 0)
+        {
+            SetVar<"RandomValue">(line:`x`, game:`%var(ID).AI_UnscannedX`);
+            SetVar<"RemoveListValue">(game:`%var(ID).AI_UnscannedX`, line:`x`);
+            CallFunction<"GetXLine">(line:`region`, line:`x`);
+            CallFunction<"AI.PerformScan">(line:`region`);
+            SetVar<"=">(local:`successfulTurn`, 1);
+        }
+    }
+    CallFunction<"AI.Turn2">();
+
+--------------------------
+
+Function<"AI.MoveTree">(var: visited, str: from)
+    SetVar<"CreateList">(line:`pair`, line:`from`, 0);
+    SetVar<"CreateList">(line:`queue`, line:`pair`);
+    SetVar<"CreateDict">(line:`visited`);
+    Repeat<"Forever">()
+    {
+        SetVar<"ListLength">(line:`len`, line:`queue`);
+        IfVar<"=">(line:`len`, 0)
+        {
+            Control<"StopRepeat">();
+        }
+        SetVar<"PopListValue">(line:`pair`, line:`queue`, 1);
+        SetVar<"GetListValue">(line:`tile`, line:`pair`, 1);
+        SetVar<"GetListValue">(line:`parent`, line:`pair`, 2);
+        IfVar<"DictHasKey">(line:`visited`, line:`tile`)
+        {
+            Control<"Skip">();
+        }
+        SetVar<"SetDictValue">(line:`visited`, line:`tile`, line:`parent`);
+        CallFunction<"GetNeighbors">(line:`neighbors`, line:`tile`);
+        SetVar<"RandomizeList">(line:`neighbors`);
+        Repeat<"ForEach">(line:`neighbor`, line:`neighbors`)
+        {
+            IfVar<"DictHasKey">(line:`visited`, line:`neighbor`)
+            {
+                Control<"Skip">();
+            }
+            IfVar<"DictHasKey | NOT">(game:`%var(ID).Walls`, '%var(tile):%var(neighbor)')
+            {
+                IfVar<"DictHasKey | NOT">(game:`%var(ID).Walls`, '%var(neighbor):%var(tile)')
+                {
+                    SetVar<"CreateList">(line:`pair`, line:`neighbor`, line:`tile`);
+                    SetVar<"AppendValue">(line:`queue`, line:`pair`);
+                }
+            }
+        }
+    }
+
+--------------------------
+
+Function<"AI.Init">()
+    SetVar<"CreateDict">(game:`%var(ID).AI_Unvisited`);
+    Repeat<"Range">(line:`x`, 0, 9)
+    {
+        Repeat<"Range">(line:`z`, 0, 9)
+        {
+            SetVar<"SetDictValue">(game:`%var(ID).AI_Unvisited`, '%var(x)|%var(z)', 0);
+        }
+    }
+    SetVar<"RemoveDictEntry">(game:`%var(ID).AI_Unvisited`, game:`%var(ID).%var(%var(ID).AI_Color)Pos`);
+    SetVar<"CreateList">(game:`%var(ID).AI_UnscannedX`, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+    SetVar<"CreateList">(game:`%var(ID).AI_UnscannedZ`, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+--------------------------
+
+Function<"AI.PerformScan">(list: region)
+    CallFunction<"AttemptScan">(line:`coresFound`, line:`region`);
+    IfVar<"=">(line:`coresFound`, 0)
+    {
+        Repeat<"ForEach">(line:`tile`, line:`region`)
+        {
+            SetVar<"RemoveDictEntry">(game:`%var(ID).AI_Unvisited`, line:`tile`);
+        }
+    }
+
+--------------------------
+
+Function<"AI.TurnStart">()
+    IfVar<"=">(game:`%var(ID).AI_Enabled`, 0)
+    {
+        Control<"Return">();
+    }
+    SetVar<"=">(game:`%var(ID).AI_TryEndTurn`, 0);
+    SetVar<"-=">(game:`%var(ID).AI_5x5Cooldown`);
+    SetVar<"=">(game:`%var(ID).AI_Pathfind`, 0);
+
+--------------------------
+
+Function<"WallToLoc">(var: location, str: wall)
+    SetVar<"TrimString">(line:`tile1`, line:`wall`, 1, 3);
+    SetVar<"TrimString">(line:`tile2`, line:`wall`, 5, 7);
+    CallFunction<"TileToLocation">(line:`loc1`, line:`tile1`);
+    CallFunction<"TileToLocation">(line:`loc2`, line:`tile2`);
+    SetVar<"GetCenterLoc">(line:`location`, line:`loc1`, line:`loc2`);
+
+--------------------------
+
+Function<"AI.Wall.Connect">(var: wall)
+    SetVar<"GetDictSize">(line:`size`, game:`%var(ID).Walls`);
+    IfVar<"=">(line:`size`, 0)
+    {
+        CallFunction<"AI.Wall.Random">(line:`wall`);
+        Control<"Return">();
+    }
+    SetVar<"GetDictKeys">(line:`placedWalls`, game:`%var(ID).Walls`);
+    SetVar<"RandomValue">(line:`adjWall`, line:`placedWalls`);
+    CallFunction<"GetAdjWalls">(line:`adjWalls`, line:`adjWall`);
+    SetVar<"RandomValue">(line:`wall`, line:`adjWalls`);
+
+--------------------------
+
+Function<"AI.Wall.Random">(var: wall)
+    SetVar<"=">(line:`x`, %random(0,9));
+    SetVar<"=">(line:`z`, %random(0,9));
+    SetVar<"=">(line:`tile1`, '%var(x)|%var(z)');
+    CallFunction<"GetNeighbors">(line:`neighbors`, line:`tile1`);
+    SetVar<"RandomValue">(line:`tile2`, line:`neighbors`);
+    CallFunction<"MakeSortedWall">(line:`wall`, line:`tile1`, line:`tile2`);
+
+--------------------------
+
+Function<"AI.TurnHandler">()
+    IfVar<"=">(game:`%var(ID).AI_Enabled`, 0)
+    {
+        Control<"Return">();
+    }
+    IfVar<"!=">(game:`%var(ID).%var(%var(ID).Turn)Player`, 'AI')
+    {
+        Control<"Return">();
+    }
+    IfVar<"<">(game:`%var(ID).LoopTick`, 20)
+    {
+        Control<"Return">();
+    }
+    SetVar<"%">(line:`mod`, game:`%var(ID).LoopTick`, 20)#RemainderMode=Modulo;
+    IfVar<"=">(line:`mod`, 1)
+    {
+        IfVar<"=">(game:`%var(ID).AI_TryEndTurn`, 1)
+        {
+            CallFunction<"AttemptEndTurn">();
+            Control<"Return">();
+        }
+        IfVar<"!=">(game:`%var(ID).AI_Pathfind`, 0)
+        {
+            CallFunction<"AI.Move">();
+        }
+        Else
+        {
+            SetVar<"=">(local:`successfulTurn`, 0);
+            Repeat<"Multiple">(50)
+            {
+                CallFunction<"AI.Turn">();
+                IfVar<"=">(local:`successfulTurn`, 1)
+                {
+                    Control<"StopRepeat">();
+                }
+            }
+        }
+    }
+
+--------------------------
+
+Function<"AI.Pathfind">(var: successful)
+    SetVar<"=">(line:`successful`, 0);
+    SetVar<"=">(line:`color`, game:`%var(ID).AI_Color`);
+    SetVar<"=">(line:`currentPos`, game:`%var(ID).%var(color)Pos`);
+    CallFunction<"AI.MoveTree">(line:`tree`, line:`currentPos`);
+    CallFunction<"AI.GetPath">(line:`path`, line:`tree`);
+    SetVar<"=">(game:`%var(ID).AI_Pathfind`, line:`path`);
+
+--------------------------
+
+Function<"AI.GetPath">(var: path, dict: tree)
+    SetVar<"GetDictSize">(line:`leftToVisit`, game:`%var(ID).AI_Unvisited`);
+    IfVar<"=">(line:`leftToVisit`, 0)
+    {
+        CallFunction<"AI.Init">();
+    }
+    Repeat<"ForEachEntry">(line:`dest`, line:`ignored`, line:`tree`)
+    {
+        IfVar<"DictHasKey | NOT">(game:`%var(ID).AI_Unvisited`, line:`dest`)
+        {
+            Control<"Skip">();
+        }
+        SetVar<"=">(line:`current`, line:`dest`);
+        SetVar<"CreateList">(line:`path`);
+        Repeat<"Forever">()
+        {
+            SetVar<"GetDictValue">(line:`parent`, line:`tree`, line:`current`);
+            IfVar<"=">(line:`parent`, 0)
+            {
+                Control<"StopRepeat">();
+            }
+            SetVar<"AppendValue">(line:`path`, line:`current`);
+            SetVar<"=">(line:`current`, line:`parent`);
+        }
+        Control<"StopRepeat">();
+    }
+
+--------------------------
+
+Function<"AI.GetAllPaths">(var: paths, dict: tree, num: maxDepth)
+    SetVar<"CreateDict">(line:`paths`);
+    SetVar<"+">(line:`iters`, line:`maxDepth`, 1);
+    Repeat<"ForEachEntry">(line:`dest`, line:`parent (ignored)`, line:`tree`)
+    {
+        IfVar<"=">(line:`parent (ignored)`, 0)
+        {
+            Control<"Skip">();
+        }
+        IfVar<"DictHasKey | NOT">(game:`%var(ID).AI_Unvisited`, line:`dest`)
+        {
+            Control<"Skip">();
+        }
+        SetVar<"=">(line:`current`, line:`dest`);
+        SetVar<"CreateList">(line:`path`);
+        SetVar<"=">(line:`depth`, 0);
+        Repeat<"Multiple">(line:`iters`)
+        {
+            SetVar<"GetDictValue">(line:`parent`, line:`tree`, line:`current`);
+            IfVar<"=">(line:`parent`, 0)
+            {
+                Control<"StopRepeat">();
+            }
+            SetVar<"AppendValue">(line:`path`, line:`current`);
+            SetVar<"=">(line:`current`, line:`parent`);
+            SetVar<"+=">(line:`depth`);
+        }
+        IfVar<"=">(line:`parent`, 0)
+        {
+            IfVar<">">(line:`depth`, 0)
+            {
+                SetVar<"=">(line:`pathStr`, '%var(path)');
+                SetVar<"SetDictValue">(line:`paths`, line:`pathStr`, line:`depth`);
+            }
+        }
+        Else
+        {
+            Control<"StopRepeat">();
+        }
+    }
+
+--------------------------
+
+Function<"AI.Move">()
+    IfVar<"=">(game:`%var(ID).Energy`, 0)
+    {
+        CallFunction<"AI.EndTurn">();
+        Control<"Return">();
+    }
+    SetVar<"=">(line:`color`, game:`%var(ID).AI_Color`);
+    SetVar<"PopListValue">(line:`moveTo`, game:`%var(ID).AI_Pathfind`);
+    CallFunction<"MovePiece">(game:`%var(ID).%var(color)Pos`, line:`moveTo`, line:`color`);
+    SetVar<"RemoveDictEntry">(game:`%var(ID).AI_Unvisited`, line:`moveTo`);
+    SetVar<"GetDictSize">(line:`leftToVisit`, game:`%var(ID).AI_Unvisited`);
+    IfVar<"=">(line:`leftToVisit`, 0)
+    {
+        CallFunction<"AI.Init">();
+    }
+    SetVar<"ListLength">(line:`remainingSteps`, game:`%var(ID).AI_Pathfind`);
+    IfVar<"=">(line:`remainingSteps`, 0)
+    {
+        CallFunction<"AI.Pathfind">();
+    }
+    SetVar<"-=">(game:`%var(ID).Energy`);
+
+--------------------------
+
+Function<"GetWallCorners">(loc: wallLoc, var: corner1, var: corner2)
+    SetVar<"AlignLoc">(line:`wallLoc`)#Rotation=RemoveRotation;
+    SetVar<"VectorBetween">(line:`vec`, game:`%var(ID).Corner`, line:`wallLoc`);
+    SetVar<"AddVectors">(line:`vec`, line:`vec`, 〈1,0,1〉);
+    SetVar<"GetVectorComp">(line:`x`, line:`vec`);
+    SetVar<"GetVectorComp">(line:`z`, line:`vec`)#Component=Z;
+    SetVar<"RoundNumber">(line:`divX`, line:`x`, 4)#RoundMode=Floor;
+    SetVar<"RoundNumber">(line:`divZ`, line:`z`, 4)#RoundMode=Floor;
+    IfVar<"=">(%math(%var(x) % 4), 3)
+    {
+        SetVar<"SetAllCoords">(line:`corner1`, line:`x`, 0, %math(%var(divZ)-1));
+        SetVar<"SetAllCoords">(line:`corner2`, line:`x`, 0, %math(%var(divZ)+3));
+    }
+    Else
+    {
+        SetVar<"SetAllCoords">(line:`corner1`, %math(%var(divX)-1), 0, line:`z`);
+        SetVar<"SetAllCoords">(line:`corner2`, %math(%var(divX)+3), 0, line:`z`);
+    }
+    SetVar<"+">(line:`corner1`, line:`corner1`, game:`%var(ID).Corner`, [-1,0,-1]);
+    SetVar<"+">(line:`corner2`, line:`corner2`, game:`%var(ID).Corner`, [-1,0,-1]);
+
+--------------------------
+
+Function<"AI.EndTurn">()
+    SetVar<"=">(game:`%var(ID).AI_TryEndTurn`, 1);
+
+--------------------------
+
+Function<"AI.Turn2">()
+    IfVar<"=">(local:`action`, 'scanZ')
+    {
+        SetVar<"ListLength">(line:`remaining`, game:`%var(ID).AI_UnscannedZ`);
+        IfVar<">">(line:`remaining`, 0)
+        {
+            SetVar<"RandomValue">(line:`z`, game:`%var(ID).AI_UnscannedZ`);
+            SetVar<"RemoveListValue">(game:`%var(ID).AI_UnscannedZ`, line:`z`);
+            CallFunction<"GetZLine">(line:`region`, line:`z`);
+            CallFunction<"AI.PerformScan">(line:`region`);
+            SetVar<"=">(local:`successfulTurn`, 1);
+        }
+    }
+    IfVar<"=">(local:`action`, 'movecore')
+    {
+        SetVar<"=">(line:`color`, game:`%var(ID).Turn`);
+        SetVar<"RandomValue">(line:`core`, game:`%var(ID).%var(color)Cores`);
+        CallFunction<"GetCoreMoves">(line:`moves`, line:`core`, line:`color`);
+        SetVar<"ListLength">(line:`numMoves`, line:`moves`);
+        IfVar<">">(line:`numMoves`, 0)
+        {
+            SetVar<"GetValueIndex">(game:`%var(ID).MovingCore`, game:`%var(ID).%var(color)Cores`, line:`core`);
+            SetVar<"RandomValue">(line:`move`, line:`moves`);
+            CallFunction<"MoveCore">(line:`core`, line:`move`, line:`color`);
+            SetVar<"=">(local:`successfulTurn`, 1);
+            SetVar<"-=">(game:`%var(ID).Energy`, 3);
+        }
+    }
+    IfVar<"=">(local:`action`, 'move')
+    {
+        CallFunction<"AI.Pathfind">(local:`successfulTurn`);
+        SetVar<"=">(local:`successfulTurn`, 1);
+    }
+
+--------------------------
+
+Function<"StartMPMatch">()
+    SetVar<"ListLength">(line:`peopleInQueue`, game:`MultiplayerQueue`);
+    IfVar<"<">(line:`peopleInQueue`, 2)
+    {
+        Control<"Return">();
+    }
+    CallFunction<"FindRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, line:`verticalShift`);
+    IfVar<"=">(line:`roomNumber`, 0)
+    {
+        Control<"Return">();
+    }
+    SetVar<"PopListValue">(line:`player1`, game:`MultiplayerQueue`, 1);
+    SetVar<"PopListValue">(line:`player2`, game:`MultiplayerQueue`, 1);
+    IfVar<"=">(%random(0,1), 0)
+    {
+        CallFunction<"StartRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, line:`player1`, line:`player2`, line:`verticalShift`);
+        SetVar<"StyledText">(line:`msg`, "<#cc88dd>» Found a match!<space>", game:`RedColor`, line:`player1`, "<space><gray>vs.<space>", game:`BlueColor`, line:`player2`, "<space><gray>in Room %var(roomNumber).");
+    }
+    Else
+    {
+        CallFunction<"StartRoom">(line:`roomNumber`, line:`corner`, line:`redSpawn`, line:`blueSpawn`, line:`player2`, line:`player1`, line:`verticalShift`);
+        SetVar<"StyledText">(line:`msg`, "<#cc88dd>» Found a match!<space>", game:`RedColor`, line:`player2`, "<space><gray>vs.<space>", game:`BlueColor`, line:`player1`, "<space><gray>in Room %var(roomNumber).");
+    }
+    SelectObject<"PlayerName">(line:`player1`, line:`player2`);
+    PlayerAction<"SendMessage">(line:`msg`);
+    SelectObject<"Reset">();
+
+--------------------------
+
+Function<"IsInBounds">(var: result, num: x, num: z)
+    SetVar<"=">(line:`result`, 0);
+    IfVar<"InRange | NOT">(line:`x`, 0, 9)
+    {
+        Control<"Return">();
+    }
+    IfVar<"InRange | NOT">(line:`z`, 0, 9)
+    {
+        Control<"Return">();
+    }
+    SetVar<"=">(line:`result`, 1);
+
+--------------------------
+
+Function<"StopSpawnSlip">()
+    SetVar<"Distance">(line:`dist`, [77.5,3,34.5,0,-90], GV(Location));
+    IfVar<"!=">(line:`dist`, 0)
+    {
+        PlayerAction<"Teleport">([77.5,3,34.5,0,-90])#KeepCurrentRotation=True;
+    }
+
+--------------------------
+
+Function<"IngameLoop">()
+    SetVar<"=">(local:`ID`, game:`%default room`);
+    PlayerAction<"RemovePotion">(Pot{Jump Boost -100 for ∞}, Pot{Invisibility 1 for ∞});
+    PlayerAction<"SetFoodLevel">(20);
+    PlayerAction<"SetSpeed">(100)#SpeedType=Both;
+    Repeat<"ForEach">(line:`core`, game:`%var(ID).%var(%default color)Cores`)
+    {
+        CallFunction<"TileToLocation">(line:`center`, line:`core`);
+        SetVar<"ShiftAllAxes">(line:`c1`, line:`center`, 1, -1, 1);
+        SetVar<"ShiftAllAxes">(line:`c2`, line:`center`, -1, -1, -1);
+        PlayerAction<"DisplayBlock">(line:`c1`, line:`c2`, game:`%var(%default color)Powder`);
+    }
+    IfVar<"=">(game:`DebugMode`, 1)
+    {
+        Repeat<"ForEach">(line:`core`, game:`%var(ID).%var(%var(%default color)Opposite)Cores`)
+        {
+            CallFunction<"TileToLocation">(line:`center`, line:`core`);
+            SetVar<"ShiftAllAxes">(line:`c1`, line:`center`, 1, -1, 1);
+            SetVar<"ShiftAllAxes">(line:`c2`, line:`center`, -1, -1, -1);
+            PlayerAction<"DisplayBlock">(line:`c1`, line:`c2`, game:`%var(%var(%default color)Opposite)Powder`);
+        }
+    }
+
+--------------------------
+
+Function<"ClearGrid">()
+    SetVar<"ShiftAllAxes">(line:`c1`, game:`%var(ID).Corner`, -2, -1, -2);
+    SetVar<"ShiftAllAxes">(line:`c2`, game:`%var(ID).Corner`, 37, -1, 3);
+    Repeat<"Multiple">(13)
+    {
+        PlayerAction<"ClearDispBlock">(line:`c1`, line:`c2`);
+        SetVar<"ShiftOnAxis">(line:`c1`, 3)#Coordinate=Z;
+        SetVar<"ShiftOnAxis">(line:`c2`, 3)#Coordinate=Z;
+    }
+
+--------------------------
+
 Process<"PlayerLoopH">()
     Repeat<"Forever">()
     {
@@ -1667,9 +2153,11 @@ Process<"PlayerLoop">()
     IfVar<"=">(game:`%default mode`, 'Spawn', 'Verification')
     {
         PlayerAction<"SetFoodLevel">(6);
-        PlayerAction<"GivePotion">(Pot{Jump Boost -100 for ∞})#ShowIcon=False#EffectParticles=None;
+        PlayerAction<"GivePotion">(Pot{Jump Boost -100 for ∞}, Pot{Invisibility 1 for ∞})#ShowIcon=False#EffectParticles=None;
         PlayerAction<"SetSpeed">(0);
         PlayerAction<"SetAllowFlight">()#AllowFlight=Disable;
+        PlayerAction<"SetSlot">(9);
+        CallFunction<"StopSpawnSlip">();
     }
     IfVar<"=">(game:`%default mode`, 'Ingame')
     {
@@ -1689,6 +2177,39 @@ Process<"FastPlayerLoop">()
         SetVar<"=">(local:`lastPointerLoc`, line:`target`);
         PlayerAction<"Particle">(line:`target`, PFX{Dust|colorVariation=0|size=0.5|rgb=16777215|sizeVariation=0});
         CallFunction<"HeldItemLoop">();
+        IfPlayer<"IsHolding">(game:`MoveCoreItem`, game:`RedCore`, game:`BlueCore`)
+        {
+            PlayerAction<"GivePotion">(Pot{Invisibility 1 for 00:02})#EffectParticles=None;
+            SelectObject<"PlayerName | NOT">('%default');
+            PlayerAction<"SetEntityHidden">('%default');
+            SelectObject<"Reset">();
+        }
+        Else
+        {
+            SelectObject<"PlayerName | NOT">('%default');
+            PlayerAction<"SetEntityHidden">('%default')#Hidden=Disable;
+            SelectObject<"Reset">();
+        }
+    }
+
+--------------------------
+
+Process<"ScanAnim">()
+    Repeat<"ForEach">(line:`tile`, local:`scanAnimRegion`)
+    {
+        CallFunction<"TileToCoords">(line:`x`, line:`z`, line:`tile`);
+        CallFunction<"IsInBounds">(line:`inBounds`, line:`x`, line:`z`);
+        IfVar<"=">(line:`inBounds`, 1)
+        {
+            CallFunction<"TileToLocation">(line:`loc`, line:`tile`);
+            SetVar<"ShiftAllAxes">(line:`c1`, line:`loc`, -1.5, -0.5, -1.5);
+            SetVar<"ShiftAllAxes">(line:`c2`, line:`loc`, 1.5, -0.5, 1.5);
+            SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
+            PlayerAction<"SetItemCooldown">(item:magma_cube_spawn_egg, 10);
+            PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, PFX{Dust|colorVariation=0|size=3|rgb=65280|sizeVariation=0})#FillType=Hollow;
+            SelectObject<"Reset">();
+            Control<"Wait">(2);
+        }
     }
 
 --------------------------

@@ -1,6 +1,11 @@
 Function<"HeldItemLoop">()
     SetVar<"ShiftOnAxis">(local:`blockHit`, -0.5)#Coordinate=Y;
     SetVar<"=">(local:`currentTile`, game:`%var(ID).%var(%default color)Pos`);
+    SetVar<"=">(local:`doScanHighlight`, 0);
+    IfPlayer<"NoItemCooldown">(item:magma_cube_spawn_egg)
+    {
+        SetVar<"=">(local:`doScanHighlight`, 1);
+    }
     IfPlayer<"IsHolding">(game:`MoveItem`)#HandSlot=MainHand
     {
         CallFunction<"GetNeighbors">(line:`neighbors`, local:`currentTile`);
@@ -45,9 +50,12 @@ Function<"HeldItemLoop">()
     }
     IfPlayer<"IsHolding">(game:`Scan5x5Item`)#HandSlot=MainHand
     {
-        CallFunction<"TileToLocation">(line:`loc`, local:`currentTile`);
-        SetVar<"ShiftAllAxes">(line:`c1`, line:`loc`, -9.5, -0.5, -9.5);
-        SetVar<"ShiftAllAxes">(line:`c2`, line:`loc`, 9.5, -0.5, 9.5);
-        PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, 1, PFX{Electric Spark|motionVariation=100|x=1|y=0|z=0})#FillType=Hollow;
+        IfVar<"=">(local:`doScanHighlight`, 1)
+        {
+            CallFunction<"TileToLocation">(line:`loc`, local:`currentTile`);
+            SetVar<"ShiftAllAxes">(line:`c1`, line:`loc`, -9.5, -0.5, -9.5);
+            SetVar<"ShiftAllAxes">(line:`c2`, line:`loc`, 9.5, -0.5, 9.5);
+            PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, 1, PFX{Electric Spark|motionVariation=100|x=1|y=0|z=0})#FillType=Hollow;
+        }
     }
     CallFunction<"HeldItemLoop2">();

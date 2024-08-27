@@ -1,6 +1,6 @@
 Function<"IngameLoop">()
     SetVar<"=">(local:`ID`, game:`%default room`);
-    PlayerAction<"RemovePotion">(Pot{Jump Boost -100 for ∞});
+    PlayerAction<"RemovePotion">(Pot{Jump Boost -100 for ∞}, Pot{Invisibility 1 for ∞});
     PlayerAction<"SetFoodLevel">(20);
     PlayerAction<"SetSpeed">(100)#SpeedType=Both;
     Repeat<"ForEach">(line:`core`, game:`%var(ID).%var(%default color)Cores`)
@@ -10,10 +10,13 @@ Function<"IngameLoop">()
         SetVar<"ShiftAllAxes">(line:`c2`, line:`center`, -1, -1, -1);
         PlayerAction<"DisplayBlock">(line:`c1`, line:`c2`, game:`%var(%default color)Powder`);
     }
-    Repeat<"ForEach">(line:`core`, game:`%var(ID).%var(%var(%default color)Opposite)Cores`)
+    IfVar<"=">(game:`DebugMode`, 1)
     {
-        CallFunction<"TileToLocation">(line:`center`, line:`core`);
-        SetVar<"ShiftAllAxes">(line:`c1`, line:`center`, 1, -1, 1);
-        SetVar<"ShiftAllAxes">(line:`c2`, line:`center`, -1, -1, -1);
-        PlayerAction<"DisplayBlock">(line:`c1`, line:`c2`, game:`%var(%var(%default color)Opposite)Powder`);
+        Repeat<"ForEach">(line:`core`, game:`%var(ID).%var(%var(%default color)Opposite)Cores`)
+        {
+            CallFunction<"TileToLocation">(line:`center`, line:`core`);
+            SetVar<"ShiftAllAxes">(line:`c1`, line:`center`, 1, -1, 1);
+            SetVar<"ShiftAllAxes">(line:`c2`, line:`center`, -1, -1, -1);
+            PlayerAction<"DisplayBlock">(line:`c1`, line:`c2`, game:`%var(%var(%default color)Opposite)Powder`);
+        }
     }

@@ -1,0 +1,6 @@
+Function<"StopSpawnSlip">()
+    SetVar<"Distance">(line:`dist`, [77.5,3,34.5,0,-90], GV(Location));
+    IfVar<"!=">(line:`dist`, 0)
+    {
+        PlayerAction<"Teleport">([77.5,3,34.5,0,-90])#KeepCurrentRotation=True;
+    }

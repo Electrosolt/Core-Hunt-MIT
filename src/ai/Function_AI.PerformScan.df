@@ -1,0 +1,9 @@
+Function<"AI.PerformScan">(list: region)
+    CallFunction<"AttemptScan">(line:`coresFound`, line:`region`);
+    IfVar<"=">(line:`coresFound`, 0)
+    {
+        Repeat<"ForEach">(line:`tile`, line:`region`)
+        {
+            SetVar<"RemoveDictEntry">(game:`%var(ID).AI_Unvisited`, line:`tile`);
+        }
+    }

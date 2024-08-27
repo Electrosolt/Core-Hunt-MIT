@@ -1,0 +1,33 @@
+Function<"AI.Turn2">()
+    IfVar<"=">(local:`action`, 'scanZ')
+    {
+        SetVar<"ListLength">(line:`remaining`, game:`%var(ID).AI_UnscannedZ`);
+        IfVar<">">(line:`remaining`, 0)
+        {
+            SetVar<"RandomValue">(line:`z`, game:`%var(ID).AI_UnscannedZ`);
+            SetVar<"RemoveListValue">(game:`%var(ID).AI_UnscannedZ`, line:`z`);
+            CallFunction<"GetZLine">(line:`region`, line:`z`);
+            CallFunction<"AI.PerformScan">(line:`region`);
+            SetVar<"=">(local:`successfulTurn`, 1);
+        }
+    }
+    IfVar<"=">(local:`action`, 'movecore')
+    {
+        SetVar<"=">(line:`color`, game:`%var(ID).Turn`);
+        SetVar<"RandomValue">(line:`core`, game:`%var(ID).%var(color)Cores`);
+        CallFunction<"GetCoreMoves">(line:`moves`, line:`core`, line:`color`);
+        SetVar<"ListLength">(line:`numMoves`, line:`moves`);
+        IfVar<">">(line:`numMoves`, 0)
+        {
+            SetVar<"GetValueIndex">(game:`%var(ID).MovingCore`, game:`%var(ID).%var(color)Cores`, line:`core`);
+            SetVar<"RandomValue">(line:`move`, line:`moves`);
+            CallFunction<"MoveCore">(line:`core`, line:`move`, line:`color`);
+            SetVar<"=">(local:`successfulTurn`, 1);
+            SetVar<"-=">(game:`%var(ID).Energy`, 3);
+        }
+    }
+    IfVar<"=">(local:`action`, 'move')
+    {
+        CallFunction<"AI.Pathfind">(local:`successfulTurn`);
+        SetVar<"=">(local:`successfulTurn`, 1);
+    }

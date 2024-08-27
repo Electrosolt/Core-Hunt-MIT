@@ -9,4 +9,17 @@ Process<"FastPlayerLoop">()
         SetVar<"=">(local:`lastPointerLoc`, line:`target`);
         PlayerAction<"Particle">(line:`target`, PFX{Dust|colorVariation=0|size=0.5|rgb=16777215|sizeVariation=0});
         CallFunction<"HeldItemLoop">();
+        IfPlayer<"IsHolding">(game:`MoveCoreItem`, game:`RedCore`, game:`BlueCore`)
+        {
+            PlayerAction<"GivePotion">(Pot{Invisibility 1 for 00:02})#EffectParticles=None;
+            SelectObject<"PlayerName | NOT">('%default');
+            PlayerAction<"SetEntityHidden">('%default');
+            SelectObject<"Reset">();
+        }
+        Else
+        {
+            SelectObject<"PlayerName | NOT">('%default');
+            PlayerAction<"SetEntityHidden">('%default')#Hidden=Disable;
+            SelectObject<"Reset">();
+        }
     }

@@ -1,0 +1,21 @@
+Function<"AI.Move">()
+    IfVar<"=">(game:`%var(ID).Energy`, 0)
+    {
+        CallFunction<"AI.EndTurn">();
+        Control<"Return">();
+    }
+    SetVar<"=">(line:`color`, game:`%var(ID).AI_Color`);
+    SetVar<"PopListValue">(line:`moveTo`, game:`%var(ID).AI_Pathfind`);
+    CallFunction<"MovePiece">(game:`%var(ID).%var(color)Pos`, line:`moveTo`, line:`color`);
+    SetVar<"RemoveDictEntry">(game:`%var(ID).AI_Unvisited`, line:`moveTo`);
+    SetVar<"GetDictSize">(line:`leftToVisit`, game:`%var(ID).AI_Unvisited`);
+    IfVar<"=">(line:`leftToVisit`, 0)
+    {
+        CallFunction<"AI.Init">();
+    }
+    SetVar<"ListLength">(line:`remainingSteps`, game:`%var(ID).AI_Pathfind`);
+    IfVar<"=">(line:`remainingSteps`, 0)
+    {
+        CallFunction<"AI.Pathfind">();
+    }
+    SetVar<"-=">(game:`%var(ID).Energy`);

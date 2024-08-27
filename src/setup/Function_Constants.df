@@ -1,5 +1,6 @@
 Function<"Constants">()
     SetVar<"CreateList">(game:`rooms`, 'empty', 'empty', 'empty', 'empty', 'empty');
+    SetVar<"CreateList">(game:`MultiplayerQueue`);
     SetVar<"=">(game:`RedCore`, item:red_stained_glass);
     SetVar<"=">(game:`BlueCore`, item:blue_stained_glass);
     SetVar<"=">(game:`RedOpposite`, 'Blue');
@@ -27,3 +28,4 @@ Function<"Constants">()
     SetVar<"=">(game:`BlueExplosionParticle`, PFX{100.0xItem|material=BLUE_GLAZED_TERRACOTTA|motionVariation=40|x=0|y=10|z=0});
     SetVar<"=">(game:`RedFirework`, item:firework_rocket);
     SetVar<"=">(game:`BlueFirework`, item:firework_rocket);
+    SetVar<"SetItemType">(game:`Air`, item:grass_block, 'air');

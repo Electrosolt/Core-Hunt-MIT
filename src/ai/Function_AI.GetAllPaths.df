@@ -1,0 +1,40 @@
+Function<"AI.GetAllPaths">(var: paths, dict: tree, num: maxDepth)
+    SetVar<"CreateDict">(line:`paths`);
+    SetVar<"+">(line:`iters`, line:`maxDepth`, 1);
+    Repeat<"ForEachEntry">(line:`dest`, line:`parent (ignored)`, line:`tree`)
+    {
+        IfVar<"=">(line:`parent (ignored)`, 0)
+        {
+            Control<"Skip">();
+        }
+        IfVar<"DictHasKey | NOT">(game:`%var(ID).AI_Unvisited`, line:`dest`)
+        {
+            Control<"Skip">();
+        }
+        SetVar<"=">(line:`current`, line:`dest`);
+        SetVar<"CreateList">(line:`path`);
+        SetVar<"=">(line:`depth`, 0);
+        Repeat<"Multiple">(line:`iters`)
+        {
+            SetVar<"GetDictValue">(line:`parent`, line:`tree`, line:`current`);
+            IfVar<"=">(line:`parent`, 0)
+            {
+                Control<"StopRepeat">();
+            }
+            SetVar<"AppendValue">(line:`path`, line:`current`);
+            SetVar<"=">(line:`current`, line:`parent`);
+            SetVar<"+=">(line:`depth`);
+        }
+        IfVar<"=">(line:`parent`, 0)
+        {
+            IfVar<">">(line:`depth`, 0)
+            {
+                SetVar<"=">(line:`pathStr`, '%var(path)');
+                SetVar<"SetDictValue">(line:`paths`, line:`pathStr`, line:`depth`);
+            }
+        }
+        Else
+        {
+            Control<"StopRepeat">();
+        }
+    }

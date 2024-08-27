@@ -12,7 +12,7 @@ Function<"StartRoom">(item:gold_block, num: IDNum, loc: corner, loc: redStart, l
     SetVar<"CreateList">(game:`%var(ID).RedCores`);
     SetVar<"CreateList">(game:`%var(ID).BlueCores`);
     SetVar<"CreateDict">(game:`%var(ID).Walls`);
-    SetVar<"=">(game:`%var(ID).InitialWallMax`, 4);
+    SetVar<"=">(game:`%var(ID).InitialWallMax`, 40);
     SetVar<"=">(game:`%var(ID).InitialWallsPlaced`, 0);
     SetVar<"=">(game:`%var(ID).Energy`, 0);
     CallFunction<"PlayerEnter">('Red');
@@ -24,3 +24,15 @@ Function<"StartRoom">(item:gold_block, num: IDNum, loc: corner, loc: redStart, l
     GameAction<"SetBlock">(game:`BluePieceBlock`, line:`bluePos`);
     SetVar<"=">(game:`%var(ID).RedPos`, game:`RedStartCoords`);
     SetVar<"=">(game:`%var(ID).BluePos`, game:`BlueStartCoords`);
+    IfVar<"=">('AI', line:`redPlayer`, line:`bluePlayer`)
+    {
+        SetVar<"=">(game:`%var(ID).AI_Enabled`, 1);
+        IfVar<"=">(line:`redPlayer`, 'AI')
+        {
+            SetVar<"=">(game:`%var(ID).AI_Color`, 'Red');
+        }
+        Else
+        {
+            SetVar<"=">(game:`%var(ID).AI_Color`, 'Blue');
+        }
+    }

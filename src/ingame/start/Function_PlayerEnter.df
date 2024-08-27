@@ -1,9 +1,10 @@
 Function<"PlayerEnter">(str: color)
     SelectObject<"PlayerName">(game:`%var(ID).%var(color)Player`);
     SetVar<"=">(game:`%selected mode`, 'Ingame');
-    SetVar<"=">(game:`%default room`, local:`ID`);
-    SetVar<"=">(game:`%default color`, line:`color`);
+    SetVar<"=">(game:`%selected room`, local:`ID`);
+    SetVar<"=">(game:`%selected color`, line:`color`);
     PlayerAction<"Teleport">(game:`%var(ID).%var(color)Start`);
+    PlayerAction<"SetSlot">(1);
     PlayerAction<"SetAllowFlight">();
     PlayerAction<"SetFlying">();
     PlayerAction<"SetSpeed">(100)#SpeedType=Both;
@@ -11,4 +12,7 @@ Function<"PlayerEnter">(str: color)
     PlayerAction<"SendTitle">("<gradient:red:blue>⏴ ᴄᴏʀᴇ ʜᴜɴᴛ ⏵", line:`vsText`);
     PlayerAction<"PlayEntitySound">(Sound{Ender Dragon (Note Block)|p=2|vol=0.5}, '%selected');
     CallFunction<"ClearGrid">();
+    SetVar<"=">(line:`name`, '%selected');
+    SelectObject<"EntitiesCond | HasCustomTag">('%var(name) spawn_menu');
+    EntityAction<"Remove">();
     SelectObject<"Reset">();

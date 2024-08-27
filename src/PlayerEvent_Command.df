@@ -12,11 +12,11 @@ PlayerEvent<"Command">()
         }
         Control<"End">();
     }
-    IfGame<"CommandEquals">('start')
-    {
-        CallFunction<"StartAIMatch">();
-    }
+    SetVar<"=">(local:`ID`, game:`%default room`);
     IfGame<"CommandEquals">('ab')
     {
         SetVar<"-">(game:`ActionBarOff`, 1, game:`ActionBarOff`);
+    }
+    IfGame<"CommandEquals">('credits')
+    {
     }

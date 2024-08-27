@@ -1,4 +1,4 @@
-Function<"AttemptZScan">()
+Function<"AttemptZScan">(item:gold_ingot)
     CallFunction<"GetBlockZ">(line:`z`, line:`zMod`, local:`clickedBlock`);
     IfVar<"InRange | NOT">(line:`z`, 0, 9)
     {
@@ -11,4 +11,4 @@ Function<"AttemptZScan">()
         Control<"Return">();
     }
     CallFunction<"GetZLine">(line:`region`, line:`z`);
-    CallFunction<"AttemptScan">(line:`region`);
+    CallFunction<"AttemptScan">(line:`coresFound`, line:`region`);

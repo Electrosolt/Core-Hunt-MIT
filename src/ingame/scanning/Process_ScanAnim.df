@@ -1,0 +1,17 @@
+Process<"ScanAnim">()
+    Repeat<"ForEach">(line:`tile`, local:`scanAnimRegion`)
+    {
+        CallFunction<"TileToCoords">(line:`x`, line:`z`, line:`tile`);
+        CallFunction<"IsInBounds">(line:`inBounds`, line:`x`, line:`z`);
+        IfVar<"=">(line:`inBounds`, 1)
+        {
+            CallFunction<"TileToLocation">(line:`loc`, line:`tile`);
+            SetVar<"ShiftAllAxes">(line:`c1`, line:`loc`, -1.5, -0.5, -1.5);
+            SetVar<"ShiftAllAxes">(line:`c2`, line:`loc`, 1.5, -0.5, 1.5);
+            SelectObject<"PlayerName">(game:`%var(ID).RedPlayer`, game:`%var(ID).BluePlayer`);
+            PlayerAction<"SetItemCooldown">(item:magma_cube_spawn_egg, 10);
+            PlayerAction<"ParticleCuboid">(line:`c1`, line:`c2`, PFX{Dust|colorVariation=0|size=3|rgb=65280|sizeVariation=0})#FillType=Hollow;
+            SelectObject<"Reset">();
+            Control<"Wait">(2);
+        }
+    }
